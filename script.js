@@ -468,16 +468,55 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.style.opacity = '0.6';
         submitBtn.disabled = true;
 
-        // Demo mode
-        setTimeout(() => {
-            statusDiv.innerText = "Sent successfully! (Demo)";
-            statusDiv.className = 'form-status success';
-            form.reset();
-            btnText.innerText = originalText;
-            submitBtn.style.opacity = '1';
-            submitBtn.disabled = false;
-            setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
-        }, 1200);
+        try {
+            const formData = new FormData(form);
+            const formspreeUrl = currentData.formspree || 'https://formspree.io/f/your_formspree_id';
+            
+            // If they haven't set up a Formspree ID, just show demo message
+            if (formspreeUrl.includes('your_formspree_id') || formspreeUrl.trim() === '') {
+                setTimeout(() => {
+                    statusDiv.innerText = "Please set a valid Formspree URL in settings.";
+                    statusDiv.className = 'form-status error';
+                    btnText.innerText = originalText;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.disabled = false;
+                    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+                }, 1000);
+                return;
+            }
+
+            const response = await fetch(formspreeUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                statusDiv.innerText = "Request sent successfully!";
+                statusDiv.className = 'form-status success';
+                form.reset();
+                const selectEvent = new Event('change');
+                document.getElementById('budget').dispatchEvent(selectEvent);
+            } else {
+                const data = await response.json();
+                if (Object.hasOwn(data, 'errors')) {
+                    statusDiv.innerText = data.errors.map(err => err.message).join(", ");
+                } else {
+                    statusDiv.innerText = "Oops! There was a problem submitting your form";
+                }
+                statusDiv.className = 'form-status error';
+            }
+        } catch (error) {
+            statusDiv.innerText = "Oops! There was a network problem.";
+            statusDiv.className = 'form-status error';
+        }
+
+        btnText.innerText = originalText;
+        submitBtn.style.opacity = '1';
+        submitBtn.disabled = false;
+        setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
     });
 
     const selectEl = document.getElementById('budget');
