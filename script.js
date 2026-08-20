@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
         socialFacebook: 'https://www.facebook.com/profile.php?id=61590058673601',
         bgImage: '',
         musicUrl: 'bg-music.m4a',
+        introVid1: 'https://cdn.pixabay.com/video/2020/05/11/38600-418833948_tiny.mp4',
+        introVid2: 'https://cdn.pixabay.com/video/2021/04/13/70868-536417757_tiny.mp4',
+        introVid3: 'https://cdn.pixabay.com/video/2020/07/20/45145-442436427_tiny.mp4',
         formspree: 'https://formspree.io/f/your_formspree_id',
         formTitle: 'Business Inquiry',
         formDesc: 'Sound promotion & collaboration requests.',
@@ -83,6 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('page-form-title').textContent = data.formTitle;
         document.getElementById('page-form-desc').textContent = data.formDesc;
         document.getElementById('promo-form').action = data.formspree;
+        
+        // Intro Videos
+        if (document.getElementById('intro-video-1')) {
+            document.getElementById('intro-video-1').src = data.introVid1 || '';
+            document.getElementById('intro-video-2').src = data.introVid2 || '';
+            document.getElementById('intro-video-3').src = data.introVid3 || '';
+        }
+        
         // Links
         renderPageLinks(data.links);
     }
@@ -250,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('s-formspree').value = data.formspree || '';
         document.getElementById('s-form-title').value = data.formTitle || '';
         document.getElementById('s-form-desc').value = data.formDesc || '';
+        document.getElementById('s-intro-vid1').value = data.introVid1 || '';
+        document.getElementById('s-intro-vid2').value = data.introVid2 || '';
+        document.getElementById('s-intro-vid3').value = data.introVid3 || '';
         renderLinkEditor(data.links);
     }
 
@@ -382,6 +396,9 @@ document.addEventListener('DOMContentLoaded', () => {
             formspree: document.getElementById('s-formspree').value,
             formTitle: document.getElementById('s-form-title').value,
             formDesc: document.getElementById('s-form-desc').value,
+            introVid1: document.getElementById('s-intro-vid1').value,
+            introVid2: document.getElementById('s-intro-vid2').value,
+            introVid3: document.getElementById('s-intro-vid3').value,
             links: links,
         };
 
@@ -446,15 +463,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Try to autoplay on load (might be blocked by browser)
-    audio.play().then(() => updatePlayIcon()).catch(() => {
-        // Autoplay blocked by browser. Wait for first user interaction.
-        const startAudio = () => {
-            audio.play();
-            updatePlayIcon();
-            document.removeEventListener('click', startAudio);
-        };
-        document.addEventListener('click', startAudio);
-    });
+    // We defer actual audio start to the Intro button if it's playing!
+    function handleAudioStartup() {
+        audio.play().then(() => updatePlayIcon()).catch(() => {
+            const startAudio = () => {
+                audio.play();
+                updatePlayIcon();
+                document.removeEventListener('click', startAudio);
+            };
+            document.addEventListener('click', startAudio);
+        });
+    }
+
+    // ==========================================
+    // INTRO SEQUENCE LOGIC
+    // ==========================================
+    const introOverlay = document.getElementById('intro-overlay');
+    const introEnterBtn = document.getElementById('intro-enter-btn');
+
+    if (!sessionStorage.getItem('intro_played')) {
+        // Show intro
+        introOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Start animation after a short delay so videos can load
+        setTimeout(() => {
+            introOverlay.classList.add('playing');
+        }, 100);
+
+        introEnterBtn.addEventListener('click', () => {
+            introOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            sessionStorage.setItem('intro_played', 'true');
+            // Starting audio from this button click will bypass autoplay blocks!
+            audio.play().then(() => updatePlayIcon()).catch(e => console.log(e));
+        });
+    } else {
+        // Intro already played this session
+        introOverlay.classList.add('hidden');
+        handleAudioStartup();
+    }
 
     playPauseBtn.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent document click from firing

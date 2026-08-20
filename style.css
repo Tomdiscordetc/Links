@@ -464,6 +464,68 @@ body {
 }
 .login-btn:hover { opacity: 0.85; }
 
+/* =========================================
+   INTRO OVERLAY & ANIMATIONS
+   ========================================= */
+.intro-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+}
+.intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.intro-cards-container {
+    display: flex; gap: 1.5rem; margin-bottom: 3rem;
+    max-width: 90vw; overflow-x: auto; padding: 1rem;
+    scrollbar-width: none;
+}
+.intro-cards-container::-webkit-scrollbar { display: none; }
+
+.intro-vid-card {
+    width: 220px; height: 380px; flex-shrink: 0;
+    border-radius: 20px; overflow: hidden; position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    background: #111; border: 1px solid rgba(255,255,255,0.1);
+    opacity: 0; transform: translateY(40px) scale(0.95);
+    will-change: transform, opacity;
+}
+.intro-vid-card video {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.intro-vid-info {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    padding: 1.5rem 1rem 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color: #fff; text-align: center;
+}
+.intro-vid-info h4 { font-size: 1rem; margin-bottom: 0.2rem; font-weight: 600; }
+.intro-vid-info p { font-size: 0.8rem; opacity: 0.8; }
+
+/* Staggered Slide In Animations */
+.intro-overlay.playing #intro-card-1 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; }
+.intro-overlay.playing #intro-card-2 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; }
+.intro-overlay.playing #intro-card-3 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
+
+@keyframes introSlideIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.intro-enter-btn {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem;
+    font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    opacity: 0; transform: translateY(20px);
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+}
+.intro-overlay.playing .intro-enter-btn { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards; }
+.intro-enter-btn:hover { background: #fff; color: #000; transform: scale(1.05) !important; }
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .intro-vid-card { width: 160px; height: 280px; }
+}
+
 /* Preview Modal Specifics */
 .preview-card { position: relative; padding-top: 3.5rem; }
 .preview-close {

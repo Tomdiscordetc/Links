@@ -147,6 +147,23 @@
                 </div>
             </div>
 
+            <!-- Intro Setup -->
+            <div class="settings-section">
+                <h3 class="settings-section-title">Intro Setup</h3>
+                <div class="setting-item">
+                    <label>Video 1 (MP4 URL)</label>
+                    <input type="text" id="s-intro-vid1" placeholder="https://...">
+                </div>
+                <div class="setting-item">
+                    <label>Video 2 (MP4 URL)</label>
+                    <input type="text" id="s-intro-vid2" placeholder="https://...">
+                </div>
+                <div class="setting-item">
+                    <label>Video 3 (MP4 URL)</label>
+                    <input type="text" id="s-intro-vid3" placeholder="https://...">
+                </div>
+            </div>
+
             <!-- Link Cards -->
             <div class="settings-section">
                 <h3 class="settings-section-title">Link Cards</h3>
@@ -203,6 +220,37 @@
             <button id="settings-save" class="settings-save-btn">Save Changes</button>
             <button id="settings-reset" class="settings-reset-btn">Reset to Default</button>
         </div>
+    </div>
+
+    <!-- ====== INTRO OVERLAY ====== -->
+    <div id="intro-overlay" class="intro-overlay">
+        <div class="intro-cards-container">
+            <!-- Card 1 -->
+            <div class="intro-vid-card" id="intro-card-1">
+                <video autoplay loop muted playsinline id="intro-video-1"></video>
+                <div class="intro-vid-info">
+                    <h4>Viral Sound</h4>
+                    <p>+2.5M Views</p>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="intro-vid-card" id="intro-card-2">
+                <video autoplay loop muted playsinline id="intro-video-2"></video>
+                <div class="intro-vid-info">
+                    <h4>Trending Challenge</h4>
+                    <p>+5.1M Views</p>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="intro-vid-card" id="intro-card-3">
+                <video autoplay loop muted playsinline id="intro-video-3"></video>
+                <div class="intro-vid-info">
+                    <h4>Brand Collab</h4>
+                    <p>+1.2M Views</p>
+                </div>
+            </div>
+        </div>
+        <button id="intro-enter-btn" class="intro-enter-btn">Enter Site <i class="fa-solid fa-arrow-right"></i></button>
     </div>
 
     <!-- ====== MAIN PAGE ====== -->
