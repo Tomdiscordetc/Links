@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPageLinks(links) {
+        if (!links) links = [];
         const container = document.getElementById('page-links');
         container.innerHTML = '';
         links.forEach(link => {
