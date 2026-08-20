@@ -16,6 +16,9 @@
     --bg-gradient: none;
     --bg-overlay: rgba(0, 0, 0, 0.5);
     --overlay-bg: rgba(0, 0, 0, 0.85);
+    --cursor-color: #ffffff;
+    --cursor-ring: rgba(255, 255, 255, 0.55);
+    --spotlight: rgba(255, 255, 255, 0.10);
 }
 
 [data-theme="light"] {
@@ -32,6 +35,9 @@
     --bg-gradient: none;
     --bg-overlay: rgba(255, 255, 255, 0.5);
     --overlay-bg: rgba(255, 255, 255, 0.85);
+    --cursor-color: #1d1d1f;
+    --cursor-ring: rgba(0, 0, 0, 0.40);
+    --spotlight: rgba(0, 0, 0, 0.06);
 }
 
 html { box-sizing: border-box; scroll-behavior: smooth; }
@@ -42,6 +48,7 @@ body {
     background-color: var(--bg-base);
     color: var(--text-primary);
     min-height: 100vh;
+    min-height: 100dvh;
     transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     background-size: cover; background-position: center; background-attachment: fixed;
     line-height: 1.5; -webkit-font-smoothing: antialiased;
@@ -283,7 +290,8 @@ body {
 /* =========================================
    PROFILE SIDEBAR
    ========================================= */
-.profile-sidebar { 
+.profile-sidebar {
+    position: relative;
     text-align: center;
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
@@ -340,6 +348,7 @@ body {
 .links-section { margin-bottom: 2.5rem; }
 
 .link-card {
+    position: relative;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0.9rem 1.2rem; margin-bottom: 0.75rem;
     background: var(--card-bg); border: 1px solid var(--card-border);
@@ -513,12 +522,15 @@ body {
    INTRO OVERLAY & ANIMATIONS
    ========================================= */
 .intro-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    position: fixed; top: 0; left: 0; width: 100%;
+    height: 100vh; height: 100dvh;
     background: var(--overlay-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
 }
 .intro-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+/* Returning visitor (intro already seen this session): never paint the overlay at all */
+html.intro-done .intro-overlay { display: none; }
 
 .intro-cards-container {
     display: flex; gap: 1.5rem; margin-bottom: 3rem;
@@ -534,20 +546,22 @@ body {
     background: var(--card-bg); border: 1px solid var(--card-border);
     opacity: 0; transform: translateY(40px) scale(0.95);
     will-change: transform, opacity;
+    -webkit-tap-highlight-color: transparent;
 }
 .intro-vid-card video {
     width: 100%; height: 100%; object-fit: cover;
+    display: block; background: #000; pointer-events: none;
 }
 .intro-vid-info {
     position: absolute; bottom: 0; left: 0; width: 100%;
     padding: 2.5rem 1rem 1rem;
     background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    color: #fff; text-align: center;
+    color: #fff; text-align: center; pointer-events: none;
 }
 .intro-vid-info h4 { font-size: 1rem; margin-bottom: 0.2rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 .intro-vid-info p { font-size: 0.85rem; opacity: 0.9; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
-/* Staggered Slide In Animations */
+/* Staggered slide-in (desktop row) */
 .intro-overlay.playing #intro-card-1 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; }
 .intro-overlay.playing #intro-card-2 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards; }
 .intro-overlay.playing #intro-card-3 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards; }
@@ -567,34 +581,84 @@ body {
 .intro-overlay.playing .intro-enter-btn { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards; }
 .intro-enter-btn:hover { background: var(--text-primary); color: var(--bg-base); transform: scale(1.05) !important; }
 
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-    .intro-cards-container { 
-        flex-direction: column; 
-        align-items: center; 
-        gap: 0; 
-        overflow: visible; 
-        margin-bottom: 2rem;
-    }
-    .intro-vid-card { 
-        width: 170px; 
-        height: 300px; 
-        margin-top: -200px; /* Overlap by 200px, so 100px is visible */
-        transform: translateY(-80px) scale(0.9);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    }
-    .intro-vid-card:first-child { margin-top: 0; z-index: 3; }
-    .intro-vid-card:nth-child(2) { z-index: 2; }
-    .intro-vid-card:nth-child(3) { z-index: 1; }
+/* Progress dots + swipe hint: mobile only */
+.intro-progress, .intro-hint { display: none; }
 
-    /* Override Desktop animations */
-    .intro-overlay.playing #intro-card-1 { animation: mobileSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; }
-    .intro-overlay.playing #intro-card-2 { animation: mobileSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
-    .intro-overlay.playing #intro-card-3 { animation: mobileSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards; }
+/* =========================================
+   MOBILE INTRO: SWIPEABLE VIDEO DECK
+   ========================================= */
+@media (max-width: 768px) {
+    .intro-overlay {
+        justify-content: center; gap: 1.1rem;
+        touch-action: none; overscroll-behavior: contain;
+        padding: calc(1rem + env(safe-area-inset-top)) 1rem calc(1.2rem + env(safe-area-inset-bottom));
+    }
+
+    /* The deck is a fixed-size stage - JS positions every card inside it */
+    .intro-cards-container {
+        display: block; position: relative; flex: 0 0 auto;
+        width: min(72vw, 290px);
+        height: min(58vh, 480px); height: min(58dvh, 480px);
+        margin: 0; padding: 0; max-width: none; overflow: visible;
+        touch-action: none; -webkit-user-select: none; user-select: none;
+        -webkit-touch-callout: none;
+    }
+
+    .intro-vid-card {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%; margin: 0;
+        border-radius: 22px;
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+        transform: translate3d(0, 70px, 0) scale(0.92);
+        opacity: 0;
+    }
+    /* JS owns transform/opacity on mobile - keyframes would fight the drag */
+    .intro-overlay.playing .intro-vid-card { animation: none; }
+
+    /* Entry: staggered; afterwards a shorter transition for swiping */
+    .intro-cards-container.deck-animate .intro-vid-card {
+        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
+    }
+    .intro-cards-container.deck-animate #intro-card-1 { transition-delay: 0.05s; }
+    .intro-cards-container.deck-animate #intro-card-2 { transition-delay: 0.18s; }
+    .intro-cards-container.deck-animate #intro-card-3 { transition-delay: 0.31s; }
+    .intro-cards-container.deck-live .intro-vid-card {
+        transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        transition-delay: 0s;
+    }
+    /* Finger down: the deck follows 1:1, no easing in between */
+    .intro-cards-container.is-dragging .intro-vid-card { transition: none; }
+
+    .intro-progress {
+        position: absolute; top: 50%; right: max(10px, env(safe-area-inset-right));
+        transform: translateY(-50%);
+        display: flex; flex-direction: column; gap: 8px;
+        opacity: 0; transition: opacity 0.4s ease;
+    }
+    .intro-overlay.playing .intro-progress { opacity: 1; transition-delay: 0.9s; }
+    .intro-dot {
+        width: 6px; height: 6px; padding: 0; border: none; border-radius: 4px;
+        background: var(--text-tertiary); cursor: pointer;
+        transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .intro-dot.is-active { height: 22px; background: var(--text-primary); }
+
+    .intro-hint {
+        display: flex; align-items: center; gap: 0.45rem;
+        color: var(--text-secondary); font-size: 0.75rem; letter-spacing: 0.2px;
+        opacity: 0; transition: opacity 0.5s ease;
+    }
+    .intro-overlay.playing .intro-hint { opacity: 1; transition-delay: 1.1s; }
+    .intro-hint.is-gone { opacity: 0; }
+    .intro-hint i { animation: hintBounce 1.8s ease-in-out infinite; }
+
+    .intro-enter-btn { padding: 0.8rem 2rem; font-size: 1rem; }
 }
 
-@keyframes mobileSlideIn {
-    to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes hintBounce {
+    0%, 100% { transform: translateY(2px); }
+    50% { transform: translateY(-4px); }
 }
 
 /* Preview Modal Specifics */
@@ -636,10 +700,126 @@ body {
     }
 }
 
-/* Swipe animations for mobile intro */
-.intro-vid-card.swiped-up {
-    animation: swipeUpAnim 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+
+/* =========================================
+   CUSTOM CURSOR (fine pointer only)
+   ========================================= */
+.cursor-root { display: none; }
+html.has-cursor .cursor-root { display: block; }
+html.has-cursor, html.has-cursor * { cursor: none !important; }
+
+.cursor-dot, .cursor-ring, .cursor-trail i {
+    position: fixed; top: 0; left: 0;
+    border-radius: 50%; pointer-events: none;
+    transform: translate3d(-100px, -100px, 0);
+    will-change: transform;
+    z-index: 100000;
 }
-@keyframes swipeUpAnim {
-    to { transform: translateY(-150vh) scale(0.9); opacity: 0; }
+
+.cursor-dot {
+    width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+    background: var(--cursor-color);
+    z-index: 100002;
+    transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease, margin 0.2s ease;
+}
+
+.cursor-ring {
+    width: 34px; height: 34px; margin: -17px 0 0 -17px;
+    border: 1.5px solid var(--cursor-ring);
+    background: transparent;
+    z-index: 100001;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                margin 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                border-radius 0.25s ease, background 0.25s ease,
+                border-color 0.25s ease, opacity 0.25s ease;
+}
+
+/* Trailing comet dots */
+.cursor-trail i { background: var(--cursor-color); opacity: 0.35; }
+.cursor-trail i:nth-child(1) { width: 6px; height: 6px; margin: -3px 0 0 -3px; opacity: 0.30; }
+.cursor-trail i:nth-child(2) { width: 5.5px; height: 5.5px; margin: -2.75px 0 0 -2.75px; opacity: 0.26; }
+.cursor-trail i:nth-child(3) { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; opacity: 0.22; }
+.cursor-trail i:nth-child(4) { width: 4.5px; height: 4.5px; margin: -2.25px 0 0 -2.25px; opacity: 0.18; }
+.cursor-trail i:nth-child(5) { width: 4px; height: 4px; margin: -2px 0 0 -2px; opacity: 0.14; }
+.cursor-trail i:nth-child(6) { width: 3.5px; height: 3.5px; margin: -1.75px 0 0 -1.75px; opacity: 0.11; }
+.cursor-trail i:nth-child(7) { width: 3px; height: 3px; margin: -1.5px 0 0 -1.5px; opacity: 0.08; }
+.cursor-trail i:nth-child(8) { width: 2.5px; height: 2.5px; margin: -1.25px 0 0 -1.25px; opacity: 0.05; }
+
+/* Hovering something clickable */
+.cursor-root.is-hover .cursor-ring {
+    border-color: var(--cursor-color);
+    background: rgba(128, 128, 128, 0.14);
+}
+.cursor-root.is-hover .cursor-dot { opacity: 0; }
+
+/* Over a text field */
+.cursor-root.is-text .cursor-ring {
+    width: 3px; height: 26px; margin: -13px 0 0 -1.5px;
+    border-radius: 2px; border-color: transparent;
+    background: var(--cursor-color);
+}
+.cursor-root.is-text .cursor-dot { opacity: 0; }
+
+/* Pointer left the window */
+.cursor-root.is-out .cursor-dot,
+.cursor-root.is-out .cursor-ring,
+.cursor-root.is-out .cursor-trail i { opacity: 0; }
+
+/* Click ripple */
+.cursor-ripple {
+    position: fixed; top: 0; left: 0;
+    width: 18px; height: 18px; margin: -9px 0 0 -9px;
+    border-radius: 50%; border: 1.5px solid var(--cursor-ring);
+    pointer-events: none; z-index: 100000;
+    animation: cursorRipple 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes cursorRipple {
+    from { transform: translate3d(var(--x), var(--y), 0) scale(0.4); opacity: 0.9; }
+    to   { transform: translate3d(var(--x), var(--y), 0) scale(3.4); opacity: 0; }
+}
+
+/* Magnetic buttons follow the cursor slightly */
+.magnetic { transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+.magnetic.is-pulled { transition: transform 0.12s ease-out; }
+
+/* Cursor spotlight on cards */
+@media (hover: hover) and (pointer: fine) {
+    .link-card::after, .profile-sidebar::after, .intro-vid-card::after {
+        content: ""; position: absolute; inset: 0;
+        border-radius: inherit; pointer-events: none;
+        background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), var(--spotlight), transparent 65%);
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .link-card:hover::after, .profile-sidebar:hover::after, .intro-vid-card:hover::after { opacity: 1; }
+}
+
+/* =========================================
+   TOUCH / MOBILE CONTROL BAR
+   ========================================= */
+@media (hover: none), (pointer: coarse) {
+    .dynamic-island {
+        bottom: calc(1rem + env(safe-area-inset-bottom));
+        padding: 0.4rem 0.8rem;
+    }
+    /* No hover on touch: tapping the bar expands track info + volume */
+    .dynamic-island:hover { transform: translateX(-50%); }
+    .dynamic-island:hover .track-info { width: 0; opacity: 0; padding: 0; }
+    .dynamic-island:hover #volume-slider { width: 0; opacity: 0; margin-left: 0; }
+    .dynamic-island.expanded .track-info { width: 130px; opacity: 1; padding: 0 0.5rem; }
+    .dynamic-island.expanded #volume-slider { width: 64px; opacity: 1; margin-left: 0.2rem; }
+}
+
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    html { scroll-behavior: auto; }
+    html.has-cursor, html.has-cursor * { cursor: auto !important; }
+    .cursor-root { display: none !important; }
 }

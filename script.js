@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to load data.json", e);
         }
         currentData = structuredClone(DEFAULTS);
-        applyToPage(currentData);
+        try { applyToPage(currentData); } catch (e) { console.error('applyToPage failed', e); }
+        initIntro();
     }
 
     loadData();
@@ -41,17 +42,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // APPLY DATA TO PAGE
     // ==========================================
+    // Only overwrite the markup when the value actually exists - otherwise a
+    // failed data.json would paint "undefined" all over the page.
+    function setText(id, value) {
+        if (value == null || value === '') return;
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+
     function applyToPage(data) {
+        if (!data || typeof data !== 'object') return;
         // Avatar
         document.getElementById('page-avatar').src = data.avatar || 'avatar.webp';
         // Profile text
-        document.getElementById('page-handle').textContent = data.handle;
-        document.getElementById('page-tagline').textContent = data.tagline;
+        setText('page-handle', data.handle);
+        setText('page-tagline', data.tagline);
         // Stats
-        document.getElementById('page-stat1-num').textContent = data.stat1Num;
-        document.getElementById('page-stat1-label').textContent = data.stat1Label;
-        document.getElementById('page-stat2-num').textContent = data.stat2Num;
-        document.getElementById('page-stat2-label').textContent = data.stat2Label;
+        setText('page-stat1-num', data.stat1Num);
+        setText('page-stat1-label', data.stat1Label);
+        setText('page-stat2-num', data.stat2Num);
+        setText('page-stat2-label', data.stat2Label);
         // Social
         document.getElementById('social-tiktok').href = data.socialTiktok || '#';
         document.getElementById('social-instagram').href = data.socialInstagram || '#';
@@ -66,35 +76,41 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             bgLayer.style.backgroundImage = 'none';
         }
-        // Music
-        const audio = document.getElementById('bg-music');
-        const currentSrc = audio.querySelector('source')?.src || '';
-        if (data.musicUrl && data.musicUrl !== currentSrc) {
-            audio.querySelector('source').src = data.musicUrl;
-            audio.load();
+        // Music (the <audio> element has no <source> child, src is set directly)
+        const audioEl = document.getElementById('bg-music');
+        if (data.musicUrl && audioEl.getAttribute('src') !== data.musicUrl) {
+            audioEl.setAttribute('src', data.musicUrl);
         }
         // Form
-        document.getElementById('page-form-title').textContent = data.formTitle;
-        document.getElementById('page-form-desc').textContent = data.formDesc;
-        document.getElementById('promo-form').action = data.formspree;
+        setText('page-form-title', data.formTitle);
+        setText('page-form-desc', data.formDesc);
+        if (data.formspree) document.getElementById('promo-form').action = data.formspree;
         
         // Intro Videos
-        if (document.getElementById('intro-video-1')) {
+        const introWillPlay = !sessionStorage.getItem('intro_played');
+        if (introWillPlay && document.getElementById('intro-video-1')) {
             const v1 = document.getElementById('intro-video-1');
             const v2 = document.getElementById('intro-video-2');
             const v3 = document.getElementById('intro-video-3');
-            
-            if (v1.src !== (data.introVid1 || '')) { v1.src = data.introVid1 || ''; v1.load(); }
+
+            // The front card has to be ready right away. On a phone only one
+            // video is visible at a time, so the other two stay lazy.
+            const wideIntro = window.matchMedia('(min-width: 769px)').matches;
+            v1.preload = 'auto';
+            v2.preload = wideIntro ? 'auto' : 'none';
+            v3.preload = wideIntro ? 'auto' : 'none';
+
+            if (v1.getAttribute('src') !== (data.introVid1 || '')) { v1.setAttribute('src', data.introVid1 || ''); }
             document.getElementById('intro-vid1-title').innerText = data.introVid1Title || 'Sound Promo';
             document.getElementById('intro-vid1-views').innerText = data.introVid1Views || '';
             document.getElementById('intro-card-1').href = data.introVid1Link || '#';
 
-            if (v2.src !== (data.introVid2 || '')) { v2.src = data.introVid2 || ''; v2.load(); }
+            if (v2.getAttribute('src') !== (data.introVid2 || '')) { v2.setAttribute('src', data.introVid2 || ''); }
             document.getElementById('intro-vid2-title').innerText = data.introVid2Title || 'Sound Promo';
             document.getElementById('intro-vid2-views').innerText = data.introVid2Views || '';
             document.getElementById('intro-card-2').href = data.introVid2Link || '#';
 
-            if (v3.src !== (data.introVid3 || '')) { v3.src = data.introVid3 || ''; v3.load(); }
+            if (v3.getAttribute('src') !== (data.introVid3 || '')) { v3.setAttribute('src', data.introVid3 || ''); }
             document.getElementById('intro-vid3-title').innerText = data.introVid3Title || 'Sound Promo';
             document.getElementById('intro-vid3-views').innerText = data.introVid3Views || '';
             document.getElementById('intro-card-3').href = data.introVid3Link || '#';
@@ -140,9 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
         div.textContent = str;
         return div.innerHTML;
     }
-
-    // Apply on load
-    applyToPage(currentData);
 
     // ==========================================
     // PASSWORD AUTH (SHA-256 Hashed)
@@ -297,8 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderLinkEditor(links) {
         const container = document.getElementById('link-cards-editor');
         container.innerHTML = '';
-        const frag = document.createDocumentFragment();
-        links.forEach((link, index) => {
+        (links || []).forEach((link, index) => {
             const card = document.createElement('div');
             card.className = 'link-editor-card';
             card.innerHTML = `
@@ -329,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.remove();
             });
         });
-        container.appendChild(frag);
     }
 
     function escapeAttr(str) { return (str || '').replace(/"/g, '&quot;'); }
@@ -470,14 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const htmlEl = document.documentElement;
     const themeIcon = themeToggleBtn.querySelector('i');
 
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        htmlEl.setAttribute('data-theme', savedTheme);
-        updateThemeIcon(savedTheme);
-    } else {
-        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        if (prefersLight) { htmlEl.setAttribute('data-theme', 'light'); updateThemeIcon('light'); }
-    }
+    // The inline <head> script already set data-theme before first paint,
+    // here we only need to sync the icon with it.
+    updateThemeIcon(htmlEl.getAttribute('data-theme') || 'dark');
 
     themeToggleBtn.addEventListener('click', () => {
         const newTheme = htmlEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -500,7 +506,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const muteIcon = muteBtn.querySelector('i');
     const volumeSlider = document.getElementById('volume-slider');
 
-    audio.volume = volumeSlider.value;
+    audio.volume = parseFloat(volumeSlider.value);
+    updateVolumeIcon(); // keep the speaker icon in sync with the start volume
 
     function updatePlayIcon() {
         playPauseIcon.className = audio.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause';
@@ -520,43 +527,299 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // INTRO SEQUENCE LOGIC
+    // INTRO SEQUENCE
+    // Desktop: three cards in a row.
+    // Mobile:  a swipeable deck - drag up to flip through the videos,
+    //          drag down (or use the button) to leave the intro.
     // ==========================================
     const introOverlay = document.getElementById('intro-overlay');
     const introEnterBtn = document.getElementById('intro-enter-btn');
+    const introDeck = document.getElementById('intro-deck');
+    const introHint = document.getElementById('intro-hint');
+    const introDots = Array.prototype.slice.call(document.querySelectorAll('.intro-dot'));
+    const introCards = Array.prototype.slice.call(document.querySelectorAll('.intro-vid-card'));
+    const introVideos = Array.prototype.slice.call(document.querySelectorAll('.intro-vid-card video'));
+    const mobileIntroMQ = window.matchMedia('(max-width: 768px)');
 
-    if (!sessionStorage.getItem('intro_played')) {
-        // Show intro
+    let introActive = false;
+    let introDismissed = false;
+    let deckIndex = 0;
+    let deckDrag = null;
+    let suppressCardClick = false;
+
+    function isMobileIntro() { return mobileIntroMQ.matches; }
+    function deckHeight() { return introDeck.getBoundingClientRect().height || 1; }
+    function lastCardIndex() { return introCards.length - 1; }
+
+    // Where a card sits, given its distance to the front of the deck.
+    // pos < 0 -> already swiped away, 0 -> front, > 0 -> stacked behind.
+    function cardStyleFor(pos) {
+        if (pos <= 0) {
+            const p = Math.max(pos, -1.6);
+            return {
+                transform: 'translate3d(0, ' + (p * 112) + '%, 0) scale(' + (1 + p * 0.06) + ') rotate(' + (p * 3) + 'deg)',
+                opacity: Math.max(0, Math.min(1, 1 + (p + 0.35) * 1.6)),
+                z: 100
+            };
+        }
+        const p = Math.min(pos, 3);
+        return {
+            transform: 'translate3d(0, ' + (p * 20) + 'px, 0) scale(' + Math.max(0.7, 1 - p * 0.055) + ')',
+            opacity: Math.max(0, 1 - p * 0.28),
+            z: 100 - Math.round(p * 10)
+        };
+    }
+
+    // drag is measured in cards: +1 = one full card swiped up.
+    function layoutDeck(drag) {
+        drag = drag || 0;
+        let effective = deckIndex + drag;
+        let overshoot = 0;
+
+        if (drag < 0) {
+            // pulling down: the whole deck follows the finger instead of
+            // stepping back a card - that gesture means "leave the intro"
+            overshoot = drag;
+            effective = deckIndex;
+        } else if (effective > lastCardIndex()) {
+            overshoot = effective - lastCardIndex();
+            effective = lastCardIndex();
+        }
+
+        introCards.forEach((card, i) => {
+            const st = cardStyleFor(i - effective);
+            card.style.transform = st.transform;
+            card.style.opacity = st.opacity;
+            card.style.zIndex = st.z;
+        });
+
+        introDeck.style.transform = overshoot
+            ? 'translate3d(0, ' + (-overshoot * 0.42 * deckHeight()) + 'px, 0)'
+            : '';
+    }
+
+    function updateDots() {
+        introDots.forEach((dot, i) => dot.classList.toggle('is-active', i === deckIndex));
+    }
+
+    // Mobile plays the front video only; the next one is prefetched.
+    function updateIntroVideos() {
+        introVideos.forEach((v, i) => {
+            if (!isMobileIntro() || i === deckIndex) {
+                const p = v.play();
+                if (p && p.catch) p.catch(() => {});
+            } else {
+                v.pause();
+                if (Math.abs(i - deckIndex) === 1 && v.preload === 'none') {
+                    v.preload = 'metadata';
+                    v.load();
+                }
+            }
+        });
+    }
+
+    function setDeckIndex(i) {
+        deckIndex = Math.min(Math.max(i, 0), lastCardIndex());
+        layoutDeck(0);
+        updateDots();
+        updateIntroVideos();
+    }
+
+    function hideIntroHint() {
+        if (introHint) introHint.classList.add('is-gone');
+    }
+
+    function startMobileDeck() {
+        introDeck.classList.add('deck-animate');
+        introCards.forEach(card => {
+            card.style.transform = 'translate3d(0, 70px, 0) scale(0.92)';
+            card.style.opacity = '0';
+        });
+        requestAnimationFrame(() => requestAnimationFrame(() => layoutDeck(0)));
+        // rAF is paused while the tab is in the background - make sure the deck
+        // still ends up in its proper position in that case
+        setTimeout(() => layoutDeck(0), 120);
+        updateDots();
+        setTimeout(() => {
+            introDeck.classList.remove('deck-animate');
+            introDeck.classList.add('deck-live');
+        }, 1300);
+    }
+
+    function initIntro() {
+        if (introActive || introDismissed) return;
+
+        if (sessionStorage.getItem('intro_played')) {
+            introOverlay.classList.add('hidden');
+            introOverlay.setAttribute('aria-hidden', 'true');
+            handleAudioStartup();
+            return;
+        }
+
+        document.documentElement.classList.remove('intro-done');
+        introActive = true;
         introOverlay.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-        
-        // Start animation after a short delay so videos can load
+
+        if (isMobileIntro()) startMobileDeck();
+
+        // small delay so the first frames of the videos are there
         setTimeout(() => {
             introOverlay.classList.add('playing');
-            document.querySelectorAll('.intro-vid-card video').forEach(v => {
-                v.play().catch(e => console.log('Autoplay prevented', e));
-            });
+            updateIntroVideos();
         }, 100);
+    }
 
-        introEnterBtn.addEventListener('click', () => {
-            introOverlay.classList.add('hidden');
-            document.body.style.overflow = '';
-            sessionStorage.setItem('intro_played', 'true');
-            
-            document.querySelectorAll('.intro-vid-card video').forEach(v => {
+    function dismissIntro(direction) {
+        if (introDismissed) return;
+        introDismissed = true;
+        introActive = false;
+        sessionStorage.setItem('intro_played', 'true');
+
+        if (isMobileIntro()) {
+            introDeck.classList.remove('is-dragging');
+            introDeck.classList.add('deck-live');
+            introDeck.style.transform = '';
+            const away = direction === 'down' ? '125%' : '-135%';
+            introCards.forEach(card => {
+                card.style.transform = 'translate3d(0, ' + away + ', 0) scale(0.92)';
+                card.style.opacity = '0';
+            });
+        }
+
+        introOverlay.classList.add('hidden');
+        introOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        // free the video memory once the overlay has faded out
+        setTimeout(() => {
+            introVideos.forEach(v => {
                 v.pause();
-                v.removeAttribute('src'); // Free memory
+                v.removeAttribute('src');
                 v.load();
             });
+        }, 700);
 
-            // Starting audio from this button click will bypass autoplay blocks!
-            audio.play().then(() => updatePlayIcon()).catch(e => console.log(e));
-        });
-    } else {
-        // Intro already played this session
-        introOverlay.classList.add('hidden');
-        handleAudioStartup();
+        // starting the audio from this user gesture bypasses autoplay blocking
+        const p = audio.play();
+        if (p && p.then) p.then(updatePlayIcon).catch(() => {});
     }
+
+    introEnterBtn.addEventListener('click', () => dismissIntro('up'));
+
+    // ---------- swipe / drag (pointer events cover touch + mouse) ----------
+    introDeck.addEventListener('pointerdown', (e) => {
+        if (!introActive || !isMobileIntro()) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        deckDrag = {
+            id: e.pointerId,
+            startX: e.clientX, startY: e.clientY,
+            dy: 0, axis: null, moved: false,
+            lastY: e.clientY, lastT: performance.now(), velocity: 0
+        };
+    });
+
+    introDeck.addEventListener('pointermove', (e) => {
+        if (!deckDrag || e.pointerId !== deckDrag.id) return;
+        const dx = e.clientX - deckDrag.startX;
+        const dy = e.clientY - deckDrag.startY;
+
+        if (!deckDrag.axis) {
+            if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+                deckDrag.axis = Math.abs(dy) >= Math.abs(dx) ? 'y' : 'x';
+            }
+            if (deckDrag.axis !== 'y') return;
+            deckDrag.moved = true;
+            // if the entry animation is still running, hand over to the live state
+            introDeck.classList.remove('deck-animate');
+            introDeck.classList.add('deck-live', 'is-dragging');
+            hideIntroHint();
+            if (introDeck.setPointerCapture) {
+                try { introDeck.setPointerCapture(e.pointerId); } catch (err) {}
+            }
+        }
+        if (deckDrag.axis !== 'y') return;
+
+        const now = performance.now();
+        const dt = now - deckDrag.lastT;
+        if (dt > 0) deckDrag.velocity = (e.clientY - deckDrag.lastY) / dt; // px per ms
+        deckDrag.lastY = e.clientY;
+        deckDrag.lastT = now;
+        deckDrag.dy = dy;
+
+        layoutDeck(-dy / deckHeight());
+    });
+
+    function endDeckDrag(e) {
+        if (!deckDrag || (e && e.pointerId !== deckDrag.id)) return;
+        const drag = deckDrag;
+        deckDrag = null;
+        introDeck.classList.remove('is-dragging');
+
+        if (!drag.moved) return; // a plain tap: let the card link handle it
+
+        suppressCardClick = true;
+        setTimeout(() => { suppressCardClick = false; }, 350);
+
+        const threshold = deckHeight() * 0.2;
+        const flickUp = drag.velocity < -0.4 && drag.dy < -24;
+        const flickDown = drag.velocity > 0.4 && drag.dy > 24;
+
+        if (drag.dy < -threshold || flickUp) {
+            if (deckIndex < lastCardIndex()) setDeckIndex(deckIndex + 1);
+            else dismissIntro('up');
+            return;
+        }
+        if (drag.dy > threshold || flickDown) {
+            dismissIntro('down');
+            return;
+        }
+        layoutDeck(0); // snap back
+    }
+
+    introDeck.addEventListener('pointerup', endDeckDrag);
+    introDeck.addEventListener('pointercancel', endDeckDrag);
+
+    // A drag must never open the TikTok link, and on mobile only the front card is tappable.
+    introCards.forEach((card, i) => {
+        card.addEventListener('click', (e) => {
+            if (suppressCardClick || (isMobileIntro() && i !== deckIndex)) {
+                e.preventDefault();
+                if (isMobileIntro() && i !== deckIndex && !suppressCardClick) setDeckIndex(i);
+            }
+        });
+    });
+
+    introDots.forEach((dot, i) => {
+        dot.addEventListener('click', () => { hideIntroHint(); setDeckIndex(i); });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (!introActive) return;
+        if (e.key === 'Escape') { dismissIntro('down'); return; }
+        if (!isMobileIntro()) return;
+        if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); setDeckIndex(deckIndex + 1); }
+        else if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); setDeckIndex(deckIndex - 1); }
+    });
+
+    // Rotating the phone / resizing switches between deck and row layout
+    function onIntroViewportChange() {
+        if (!introActive) return;
+        if (isMobileIntro()) {
+            introDeck.classList.add('deck-live');
+            layoutDeck(0);
+        } else {
+            introDeck.style.transform = '';
+            introCards.forEach(card => {
+                card.style.transform = '';
+                card.style.opacity = '';
+                card.style.zIndex = '';
+            });
+        }
+        updateIntroVideos();
+    }
+    if (mobileIntroMQ.addEventListener) mobileIntroMQ.addEventListener('change', onIntroViewportChange);
+    else if (mobileIntroMQ.addListener) mobileIntroMQ.addListener(onIntroViewportChange);
 
     playPauseBtn.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent document click from firing
@@ -621,10 +884,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     statusDiv.innerText = "Please set a valid Formspree URL in settings.";
                     statusDiv.className = 'form-status error';
+                    statusDiv.style.display = '';
                     btnText.innerText = originalText;
                     submitBtn.style.opacity = '1';
                     submitBtn.disabled = false;
-                    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+                    setTimeout(() => { statusDiv.className = 'form-status'; }, 5000);
                 }, 1000);
                 return;
             }
@@ -637,6 +901,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            statusDiv.style.display = '';
             if (response.ok) {
                 statusDiv.innerText = "Request sent successfully!";
                 statusDiv.className = 'form-status success';
@@ -655,12 +920,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             statusDiv.innerText = "Oops! There was a network problem.";
             statusDiv.className = 'form-status error';
+            statusDiv.style.display = '';
         }
 
         btnText.innerText = originalText;
         submitBtn.style.opacity = '1';
         submitBtn.disabled = false;
-        setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+        setTimeout(() => { statusDiv.className = 'form-status'; }, 5000);
     });
 
     const selectEl = document.getElementById('budget');
@@ -739,47 +1005,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mobile Swipe Logic for Intro
-    let touchStartY = 0;
-    let touchEndY = 0;
-    let currentMobileCardIndex = 0;
-    const introCards = document.querySelectorAll('.intro-vid-card');
-
-    if (introOverlay) {
-        introOverlay.addEventListener('touchstart', e => {
-            if (window.innerWidth > 768) return;
-            touchStartY = e.changedTouches[0].screenY;
-        }, {passive: true});
-
-        introOverlay.addEventListener('touchend', e => {
-            if (window.innerWidth > 768) return;
-            touchEndY = e.changedTouches[0].screenY;
-            const deltaY = touchEndY - touchStartY;
-            
-            // Swipe UP (next card)
-            if (deltaY < -40) {
-                if (currentMobileCardIndex < introCards.length) {
-                    introCards[currentMobileCardIndex].classList.add('swiped-up');
-                    currentMobileCardIndex++;
-                    if (currentMobileCardIndex >= introCards.length) {
-                        setTimeout(() => {
-                            if (introEnterBtn) introEnterBtn.click();
-                        }, 400);
-                    }
-                }
-            }
-            // Swipe DOWN (dismiss entire intro)
-            else if (deltaY > 40) {
-                if (introEnterBtn) introEnterBtn.click();
-            }
-        }, {passive: true});
-        
-        introCards.forEach(card => {
-            card.addEventListener('click', e => {
-                if (window.innerWidth <= 768 && Math.abs(touchEndY - touchStartY) > 20) {
-                    e.preventDefault();
-                }
-            });
+    // ==========================================
+    // CONTROL BAR ON TOUCH DEVICES
+    // There is no hover on a phone, so a tap expands the track info + volume.
+    // ==========================================
+    const island = document.getElementById('dynamic-island');
+    if (island && window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+        island.addEventListener('click', (e) => {
+            if (e.target.closest('.control-btn') || e.target.closest('#volume-slider')) return;
+            island.classList.toggle('expanded');
+        });
+        document.addEventListener('click', (e) => {
+            if (!island.contains(e.target)) island.classList.remove('expanded');
         });
     }
 

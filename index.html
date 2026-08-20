@@ -12,37 +12,52 @@
     <meta property="og:image" content="https://tomdiscordetc.github.io/Links/og-image.jpg">
     <meta property="og:url" content="https://tomdiscordetc.github.io/Links/">
     <meta property="og:type" content="website">
-    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+
+    <!-- Favicons -->
+    <link rel="icon" href="avatar.webp" type="image/webp">
+    <link rel="apple-touch-icon" href="avatar.webp">
 
     <!-- Twitter / X Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="xyz.taimo | TikTok Sound Promotions">
     <meta name="twitter:description" content="Click here for Business Inquiries, Viral Sounds, and International Collaborations. 815K+ Followers.">
     <meta name="twitter:image" content="https://tomdiscordetc.github.io/Links/og-image.jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
-    
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <!-- Font Awesome, self-hosted: no third party request -->
+    <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     
     <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
+
+    <!-- Runs before first paint: avoids a flash of the wrong theme / of the intro -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+                if (sessionStorage.getItem('intro_played')) {
+                    document.documentElement.classList.add('intro-done');
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body>
     <!-- Background -->
     <div class="background-layer" id="bg-layer"></div>
 
     <!-- Control Bar -->
-    <div class="dynamic-island">
-        <button id="theme-toggle" class="control-btn" title="Light/Dark Mode">
+    <div class="dynamic-island" id="dynamic-island">
+        <button id="theme-toggle" class="control-btn" type="button" title="Light/Dark Mode" aria-label="Toggle light or dark mode">
             <i class="fa-solid fa-moon"></i>
         </button>
         <div class="divider"></div>
-        <button id="play-pause-btn" class="control-btn" title="Play/Pause Music">
+        <button id="play-pause-btn" class="control-btn" type="button" title="Play/Pause Music" aria-label="Play or pause music">
             <i class="fa-solid fa-play"></i>
         </button>
         <div class="track-info">
@@ -57,19 +72,17 @@
         </div>
         <div class="divider"></div>
         <div class="volume-control">
-            <button id="mute-btn" class="control-btn" title="Mute/Unmute">
+            <button id="mute-btn" class="control-btn" type="button" title="Mute/Unmute" aria-label="Mute or unmute">
                 <i class="fa-solid fa-volume-high"></i>
             </button>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.1">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.1" aria-label="Volume">
         </div>
         <!-- Settings button hidden – access via triple-click on footer -->
         <button id="settings-toggle" class="control-btn" style="display:none;"></button>
     </div>
 
     <!-- Audio Player -->
-    <audio id="bg-music" loop autoplay>
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db807e4d88.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bg-music" loop preload="none"></audio>
 
     <!-- ====== SETTINGS PANEL ====== -->
     <div class="settings-overlay" id="settings-overlay"></div>
@@ -277,10 +290,10 @@
     </div>
 
     <!-- ====== INTRO OVERLAY ====== -->
-    <div id="intro-overlay" class="intro-overlay">
-        <div class="intro-cards-container">
+    <div id="intro-overlay" class="intro-overlay" role="dialog" aria-modal="true" aria-label="Intro videos">
+        <div class="intro-cards-container" id="intro-deck">
             <!-- Card 1 -->
-            <a href="#" target="_blank" class="intro-vid-card" id="intro-card-1">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="intro-vid-card" id="intro-card-1">
                 <video loop muted playsinline preload="none" id="intro-video-1"></video>
                 <div class="intro-vid-info">
                     <h4 id="intro-vid1-title">Sound Promo</h4>
@@ -288,7 +301,7 @@
                 </div>
             </a>
             <!-- Card 2 -->
-            <a href="#" target="_blank" class="intro-vid-card" id="intro-card-2">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="intro-vid-card" id="intro-card-2">
                 <video loop muted playsinline preload="none" id="intro-video-2"></video>
                 <div class="intro-vid-info">
                     <h4 id="intro-vid2-title">Sound Promo</h4>
@@ -296,7 +309,7 @@
                 </div>
             </a>
             <!-- Card 3 -->
-            <a href="#" target="_blank" class="intro-vid-card" id="intro-card-3">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="intro-vid-card" id="intro-card-3">
                 <video loop muted playsinline preload="none" id="intro-video-3"></video>
                 <div class="intro-vid-info">
                     <h4 id="intro-vid3-title">Sound Promo</h4>
@@ -304,7 +317,21 @@
                 </div>
             </a>
         </div>
-        <button id="intro-enter-btn" class="intro-enter-btn">Enter Site <i class="fa-solid fa-arrow-right"></i></button>
+
+        <!-- Swipe progress (mobile) -->
+        <div class="intro-progress" id="intro-progress">
+            <button type="button" class="intro-dot is-active" data-index="0" aria-label="Video 1"></button>
+            <button type="button" class="intro-dot" data-index="1" aria-label="Video 2"></button>
+            <button type="button" class="intro-dot" data-index="2" aria-label="Video 3"></button>
+        </div>
+
+        <!-- Swipe hint (mobile) -->
+        <div class="intro-hint" id="intro-hint" aria-hidden="true">
+            <i class="fa-solid fa-chevron-up"></i>
+            <span>Swipe up for more &middot; swipe down to skip</span>
+        </div>
+
+        <button id="intro-enter-btn" type="button" class="intro-enter-btn">Enter Site <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
     </div>
 
     <!-- ====== MAIN PAGE ====== -->
@@ -329,10 +356,10 @@
             </div>
 
             <div class="social-icons">
-                <a href="https://tiktok.com/@xyz.taimo" target="_blank" id="social-tiktok" class="social-icon tiktok interactive-hover"><i class="fa-brands fa-tiktok"></i></a>
-                <a href="#" target="_blank" id="social-instagram" class="social-icon instagram interactive-hover"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" target="_blank" id="social-youtube" class="social-icon youtube interactive-hover"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" target="_blank" id="social-facebook" class="social-icon facebook interactive-hover"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://tiktok.com/@xyz.taimo" target="_blank" id="social-tiktok" rel="noopener noreferrer" class="social-icon tiktok interactive-hover"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" target="_blank" id="social-instagram" rel="noopener noreferrer" class="social-icon instagram interactive-hover"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" target="_blank" id="social-youtube" rel="noopener noreferrer" class="social-icon youtube interactive-hover"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" target="_blank" id="social-facebook" rel="noopener noreferrer" class="social-icon facebook interactive-hover"><i class="fa-brands fa-facebook-f"></i></a>
             </div>
         </aside>
 
@@ -390,5 +417,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="cursor.js" defer></script>
 </body>
 </html>
