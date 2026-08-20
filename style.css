@@ -4,30 +4,32 @@
 
 :root, [data-theme="dark"] {
     --bg-base: #000000;
-    --text-primary: #f5f5f7;
-    --text-secondary: rgba(255, 255, 255, 0.45);
-    --text-tertiary: rgba(255, 255, 255, 0.3);
-    --card-bg: rgba(28, 28, 30, 0.55);
-    --card-border: rgba(255, 255, 255, 0.06);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --text-tertiary: rgba(255, 255, 255, 0.45);
+    --card-bg: rgba(28, 28, 30, 0.6);
+    --card-border: rgba(255, 255, 255, 0.1);
     --glass-blur: blur(30px) saturate(180%);
-    --accent-color: rgba(255, 255, 255, 0.85);
-    --shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
-    --input-bg: rgba(255, 255, 255, 0.04);
+    --accent-color: rgba(255, 255, 255, 0.9);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --input-bg: rgba(255, 255, 255, 0.08);
     --bg-gradient: none;
+    --overlay-bg: rgba(0, 0, 0, 0.85);
 }
 
 [data-theme="light"] {
-    --bg-base: #f5f5f7;
+    --bg-base: #fbfbfd;
     --text-primary: #1d1d1f;
-    --text-secondary: rgba(0, 0, 0, 0.4);
-    --text-tertiary: rgba(0, 0, 0, 0.25);
-    --card-bg: rgba(255, 255, 255, 0.72);
-    --card-border: rgba(0, 0, 0, 0.04);
+    --text-secondary: rgba(0, 0, 0, 0.65);
+    --text-tertiary: rgba(0, 0, 0, 0.45);
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(0, 0, 0, 0.08);
     --glass-blur: blur(30px) saturate(180%);
-    --accent-color: rgba(0, 0, 0, 0.75);
-    --shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
-    --input-bg: rgba(0, 0, 0, 0.025);
+    --accent-color: rgba(0, 0, 0, 0.85);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --input-bg: rgba(0, 0, 0, 0.05);
     --bg-gradient: none;
+    --overlay-bg: rgba(255, 255, 255, 0.85);
 }
 
 html { box-sizing: border-box; scroll-behavior: smooth; }
@@ -469,7 +471,7 @@ body {
    ========================================= */
 .intro-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    background: var(--overlay-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
     z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
 }
@@ -485,8 +487,8 @@ body {
 .intro-vid-card {
     width: 220px; height: 380px; flex-shrink: 0;
     border-radius: 20px; overflow: hidden; position: relative;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    background: #111; border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: var(--shadow);
+    background: var(--card-bg); border: 1px solid var(--card-border);
     opacity: 0; transform: translateY(40px) scale(0.95);
     will-change: transform, opacity;
 }
@@ -495,12 +497,12 @@ body {
 }
 .intro-vid-info {
     position: absolute; bottom: 0; left: 0; width: 100%;
-    padding: 1.5rem 1rem 1rem;
+    padding: 2.5rem 1rem 1rem;
     background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
     color: #fff; text-align: center;
 }
-.intro-vid-info h4 { font-size: 1rem; margin-bottom: 0.2rem; font-weight: 600; }
-.intro-vid-info p { font-size: 0.8rem; opacity: 0.8; }
+.intro-vid-info h4 { font-size: 1rem; margin-bottom: 0.2rem; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+.intro-vid-info p { font-size: 0.85rem; opacity: 0.9; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
 /* Staggered Slide In Animations */
 .intro-overlay.playing #intro-card-1 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; }
@@ -512,14 +514,15 @@ body {
 }
 
 .intro-enter-btn {
-    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-    color: #fff; padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    color: var(--text-primary); padding: 1rem 2.5rem; border-radius: 30px; font-size: 1.1rem;
     font-weight: 600; cursor: pointer; transition: all 0.3s ease;
     opacity: 0; transform: translateY(20px);
-    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
 }
 .intro-overlay.playing .intro-enter-btn { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards; }
-.intro-enter-btn:hover { background: #fff; color: #000; transform: scale(1.05) !important; }
+.intro-enter-btn:hover { background: var(--text-primary); color: var(--bg-base); transform: scale(1.05) !important; }
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
