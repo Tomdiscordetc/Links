@@ -10,8 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stat1Num: '815K', stat1Label: 'Followers',
         stat2Num: '50.9M', stat2Label: 'Likes',
         socialTiktok: 'https://tiktok.com/@xyz.taimo',
-        socialInstagram: '#',
-        socialYoutube: '#',
+        socialInstagram: 'https://www.instagram.com/xyz.taimo',
+        socialYoutube: 'https://www.youtube.com/@xyz_taimo',
+        socialFacebook: 'https://www.facebook.com/profile.php?id=61590058673601',
         bgImage: '',
         musicUrl: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_db807e4d88.mp3?filename=lofi-study-112191.mp3',
         formspree: 'https://formspree.io/f/your_formspree_id',
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('social-tiktok').href = data.socialTiktok || '#';
         document.getElementById('social-instagram').href = data.socialInstagram || '#';
         document.getElementById('social-youtube').href = data.socialYoutube || '#';
+        document.getElementById('social-facebook').href = data.socialFacebook || '#';
         // Background
         const bgLayer = document.getElementById('bg-layer');
         if (data.bgImage) {
@@ -242,6 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('s-social-tiktok').value = data.socialTiktok || '';
         document.getElementById('s-social-instagram').value = data.socialInstagram || '';
         document.getElementById('s-social-youtube').value = data.socialYoutube || '';
+        document.getElementById('s-social-facebook').value = data.socialFacebook || '';
         document.getElementById('s-bg-image').value = data.bgImage || '';
         document.getElementById('s-music-url').value = data.musicUrl || '';
         document.getElementById('s-formspree').value = data.formspree || '';
@@ -373,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
             socialTiktok: document.getElementById('s-social-tiktok').value,
             socialInstagram: document.getElementById('s-social-instagram').value,
             socialYoutube: document.getElementById('s-social-youtube').value,
+            socialFacebook: document.getElementById('s-social-facebook').value,
             bgImage: document.getElementById('s-bg-image').value,
             musicUrl: document.getElementById('s-music-url').value,
             formspree: document.getElementById('s-formspree').value,
@@ -551,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (platform === 'tiktok') previewTagline.textContent = "Check out my latest sound promos!";
         else if (platform === 'instagram') previewTagline.textContent = "Follow me for behind the scenes!";
         else if (platform === 'youtube') previewTagline.textContent = "Subscribe for full videos & mixes!";
+        else if (platform === 'facebook') previewTagline.textContent = "Connect with me on Facebook!";
         else previewTagline.textContent = currentData.tagline;
 
         previewStat1Num.textContent = currentData.stat1Num;
@@ -587,6 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (icon.classList.contains('tiktok')) { platform = 'tiktok'; iconClass = 'fa-brands fa-tiktok'; }
                 else if (icon.classList.contains('instagram')) { platform = 'instagram'; iconClass = 'fa-brands fa-instagram'; }
                 else if (icon.classList.contains('youtube')) { platform = 'youtube'; iconClass = 'fa-brands fa-youtube'; }
+                else if (icon.classList.contains('facebook')) { platform = 'facebook'; iconClass = 'fa-brands fa-facebook-f'; }
                 
                 openSocialPreview(platform, url, iconClass);
             }
