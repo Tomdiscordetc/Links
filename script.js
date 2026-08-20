@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         socialYoutube: 'https://www.youtube.com/@xyz_taimo',
         socialFacebook: 'https://www.facebook.com/profile.php?id=61590058673601',
         bgImage: '',
-        musicUrl: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_db807e4d88.mp3?filename=lofi-study-112191.mp3',
+        musicUrl: 'bg-music.m4a',
         formspree: 'https://formspree.io/f/your_formspree_id',
         formTitle: 'Business Inquiry',
         formDesc: 'Sound promotion & collaboration requests.',
