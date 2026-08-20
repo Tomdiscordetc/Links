@@ -1,51 +1,83 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // DEFAULT DATA (used when nothing is saved)
+    // STATE
     // ==========================================
-    const DEFAULTS = {
-        avatar: 'avatar.jpg',
-        handle: 'xyz.taimo',
-        tagline: 'TikTok Sound Promotions',
-        stat1Num: '815K', stat1Label: 'Followers',
-        stat2Num: '50.9M', stat2Label: 'Likes',
-        socialTiktok: 'https://tiktok.com/@xyz.taimo',
-        socialInstagram: 'https://www.instagram.com/xyz.taimo',
-        socialYoutube: 'https://www.youtube.com/@xyz_taimo',
-        socialFacebook: 'https://www.facebook.com/profile.php?id=61590058673601',
-        bgImage: '',
-        musicUrl: 'bg-music.m4a',
-        introVid1: 'https://cdn.pixabay.com/video/2020/05/11/38600-418833948_tiny.mp4',
-        introVid2: 'https://cdn.pixabay.com/video/2021/04/13/70868-536417757_tiny.mp4',
-        introVid3: 'https://cdn.pixabay.com/video/2020/07/20/45145-442436427_tiny.mp4',
-        formspree: 'https://formspree.io/f/your_formspree_id',
-        formTitle: 'Business Inquiry',
-        formDesc: 'Sound promotion & collaboration requests.',
-        links: [
-            { icon: 'fa-brands fa-tiktok', title: 'TikTok', sub: '@xyz.taimo', url: 'https://tiktok.com/@xyz.taimo' },
-            { icon: 'fa-solid fa-chart-line', title: 'Latest Promotion', sub: 'Current campaign', url: '#' },
-            { icon: 'fa-brands fa-spotify', title: 'Spotify', sub: 'Curated playlist', url: '#' },
-            { icon: 'fa-solid fa-briefcase', title: 'Media Kit', sub: 'Rates & reach', url: '#' },
-        ]
-    };
+    let DEFAULTS = {};
+    let currentData = {};
 
     // ==========================================
     // LOAD DATA
     // ==========================================
-    function loadData() {
-        const saved = localStorage.getItem('linkpage_data');
-        if (saved) {
-            try { return { ...DEFAULTS, ...JSON.parse(saved) }; }
-            catch(e) { return { ...DEFAULTS }; }
+    async function loadData() {
+        try {
+            const response = await fetch(`data.json?t=${new Date().getTime()}`);
+            if (response.ok) {
+                DEFAULTS = await response.json();
+            }
+        } catch (e) {
+            console.error("Failed to load data.json", e);
         }
-        return { ...DEFAULTS };
+        currentData = JSON.parse(JSON.stringify(DEFAULTS)); // Deep copy
+        applyToPage(currentData);
     }
 
-    function saveData(data) {
-        localStorage.setItem('linkpage_data', JSON.stringify(data));
-    }
+    loadData();
 
-    let currentData = loadData();
+    async function saveToGitHub(data, token) {
+        const btn = document.getElementById('settings-save');
+        const originalText = btn.textContent;
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+
+        const repo = 'Tomdiscordetc/Links'; // Hardcoded based on current repo
+        const path = 'data.json';
+        const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+        
+        try {
+            // 1. Get current file SHA
+            const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            let sha = '';
+            if (getRes.ok) {
+                const getJson = await getRes.json();
+                sha = getJson.sha;
+            } else if (getRes.status !== 404) {
+                throw new Error('Invalid GitHub Token or Repo permissions.');
+            }
+            
+            // 2. Upload new file
+            // Note: Use TextEncoder and btoa for proper utf-8 to base64 encoding
+            const str = JSON.stringify(data, null, 2);
+            const bytes = new TextEncoder().encode(str);
+            const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
+            const content = btoa(binString);
+
+            const putRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: "Admin update via Settings Panel",
+                    content: content,
+                    sha: sha
+                })
+            });
+            
+            if (putRes.ok) {
+                alert('Success! Changes saved globally. It will take 1-2 minutes for the live site to update.');
+            } else {
+                const err = await putRes.json();
+                alert('Error saving to GitHub: ' + err.message);
+            }
+        } catch(e) {
+            alert('Error: ' + e.message);
+        }
+        
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
 
     // ==========================================
     // APPLY DATA TO PAGE
@@ -264,6 +296,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('s-intro-vid1').value = data.introVid1 || '';
         document.getElementById('s-intro-vid2').value = data.introVid2 || '';
         document.getElementById('s-intro-vid3').value = data.introVid3 || '';
+        
+        // Restore GitHub token from localStorage if exists
+        document.getElementById('s-github-token').value = localStorage.getItem('github_pat') || '';
+        
         renderLinkEditor(data.links);
     }
 
@@ -401,19 +437,26 @@ document.addEventListener('DOMContentLoaded', () => {
             introVid3: document.getElementById('s-intro-vid3').value,
             links: links,
         };
+        
+        const token = document.getElementById('s-github-token').value.trim();
+        if (token) {
+            localStorage.setItem('github_pat', token);
+            saveToGitHub(currentData, token);
+        } else {
+            alert("Warning: No GitHub Token provided. Changes are only saved locally and won't be visible to others.");
+            // Still save locally just in case
+            localStorage.setItem('linkpage_data', JSON.stringify(currentData));
+        }
 
-        saveData(currentData);
         applyToPage(currentData);
         closeSettings();
     });
 
     // Reset
     document.getElementById('settings-reset').addEventListener('click', () => {
-        if (confirm('Reset all settings and password to default?')) {
+        if (confirm('Reset to currently published global settings?')) {
             localStorage.removeItem('linkpage_data');
-            localStorage.removeItem('admin_pw_hash');
-            sessionStorage.removeItem('admin_auth');
-            currentData = { ...DEFAULTS, links: [...DEFAULTS.links] };
+            currentData = JSON.parse(JSON.stringify(DEFAULTS));
             applyToPage(currentData);
             closeSettings();
         }

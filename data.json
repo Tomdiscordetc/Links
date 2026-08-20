@@ -1,0 +1,27 @@
+{
+  "avatar": "avatar.jpg",
+  "handle": "xyz.taimo",
+  "tagline": "TikTok Sound Promotions",
+  "stat1Num": "815K",
+  "stat1Label": "Followers",
+  "stat2Num": "50.9M",
+  "stat2Label": "Likes",
+  "socialTiktok": "https://tiktok.com/@xyz.taimo",
+  "socialInstagram": "https://www.instagram.com/xyz.taimo",
+  "socialYoutube": "https://www.youtube.com/@xyz_taimo",
+  "socialFacebook": "https://www.facebook.com/profile.php?id=61590058673601",
+  "bgImage": "",
+  "musicUrl": "bg-music.m4a",
+  "introVid1": "https://cdn.pixabay.com/video/2020/05/11/38600-418833948_tiny.mp4",
+  "introVid2": "https://cdn.pixabay.com/video/2021/04/13/70868-536417757_tiny.mp4",
+  "introVid3": "https://cdn.pixabay.com/video/2020/07/20/45145-442436427_tiny.mp4",
+  "formspree": "https://formspree.io/f/your_formspree_id",
+  "formTitle": "Business Inquiry",
+  "formDesc": "Sound promotion & collaboration requests.",
+  "links": [
+    { "icon": "fa-brands fa-tiktok", "title": "TikTok", "sub": "@xyz.taimo", "url": "https://tiktok.com/@xyz.taimo" },
+    { "icon": "fa-solid fa-chart-line", "title": "Latest Promotion", "sub": "Current campaign", "url": "#" },
+    { "icon": "fa-brands fa-spotify", "title": "Spotify", "sub": "Curated playlist", "url": "#" },
+    { "icon": "fa-solid fa-briefcase", "title": "Media Kit", "sub": "Rates & reach", "url": "#" }
+  ]
+}
