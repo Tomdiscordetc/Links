@@ -126,8 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const v3 = document.getElementById('intro-video-3');
             
             if (v1.src !== (data.introVid1 || '')) { v1.src = data.introVid1 || ''; v1.load(); }
+            document.getElementById('intro-vid1-title').innerText = data.introVid1Title || 'Sound Promo';
+            document.getElementById('intro-vid1-views').innerText = data.introVid1Views || '';
+            document.getElementById('intro-card-1').href = data.introVid1Link || '#';
+
             if (v2.src !== (data.introVid2 || '')) { v2.src = data.introVid2 || ''; v2.load(); }
+            document.getElementById('intro-vid2-title').innerText = data.introVid2Title || 'Sound Promo';
+            document.getElementById('intro-vid2-views').innerText = data.introVid2Views || '';
+            document.getElementById('intro-card-2').href = data.introVid2Link || '#';
+
             if (v3.src !== (data.introVid3 || '')) { v3.src = data.introVid3 || ''; v3.load(); }
+            document.getElementById('intro-vid3-title').innerText = data.introVid3Title || 'Sound Promo';
+            document.getElementById('intro-vid3-views').innerText = data.introVid3Views || '';
+            document.getElementById('intro-card-3').href = data.introVid3Link || '#';
         }
         
         // Links
@@ -305,8 +316,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('s-form-title').value = data.formTitle || '';
         document.getElementById('s-form-desc').value = data.formDesc || '';
         document.getElementById('s-intro-vid1').value = data.introVid1 || '';
+        document.getElementById('s-intro-vid1-title').value = data.introVid1Title || '';
+        document.getElementById('s-intro-vid1-views').value = data.introVid1Views || '';
+        document.getElementById('s-intro-vid1-link').value = data.introVid1Link || '';
         document.getElementById('s-intro-vid2').value = data.introVid2 || '';
+        document.getElementById('s-intro-vid2-title').value = data.introVid2Title || '';
+        document.getElementById('s-intro-vid2-views').value = data.introVid2Views || '';
+        document.getElementById('s-intro-vid2-link').value = data.introVid2Link || '';
         document.getElementById('s-intro-vid3').value = data.introVid3 || '';
+        document.getElementById('s-intro-vid3-title').value = data.introVid3Title || '';
+        document.getElementById('s-intro-vid3-views').value = data.introVid3Views || '';
+        document.getElementById('s-intro-vid3-link').value = data.introVid3Link || '';
         
         // Restore GitHub token from localStorage if exists
         document.getElementById('s-github-token').value = localStorage.getItem('github_pat') || '';
@@ -445,8 +465,17 @@ document.addEventListener('DOMContentLoaded', () => {
             formTitle: document.getElementById('s-form-title').value,
             formDesc: document.getElementById('s-form-desc').value,
             introVid1: document.getElementById('s-intro-vid1').value,
+            introVid1Title: document.getElementById('s-intro-vid1-title').value,
+            introVid1Views: document.getElementById('s-intro-vid1-views').value,
+            introVid1Link: document.getElementById('s-intro-vid1-link').value,
             introVid2: document.getElementById('s-intro-vid2').value,
+            introVid2Title: document.getElementById('s-intro-vid2-title').value,
+            introVid2Views: document.getElementById('s-intro-vid2-views').value,
+            introVid2Link: document.getElementById('s-intro-vid2-link').value,
             introVid3: document.getElementById('s-intro-vid3').value,
+            introVid3Title: document.getElementById('s-intro-vid3-title').value,
+            introVid3Views: document.getElementById('s-intro-vid3-views').value,
+            introVid3Link: document.getElementById('s-intro-vid3-link').value,
             links: links,
         };
         

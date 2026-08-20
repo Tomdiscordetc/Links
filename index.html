@@ -164,14 +164,23 @@
                 <div class="setting-item">
                     <label>Video 1 (MP4 URL)</label>
                     <input type="text" id="s-intro-vid1" placeholder="https://...">
+                    <input type="text" id="s-intro-vid1-title" placeholder="Title (e.g. Sound Promo)" style="margin-top:0.3rem">
+                    <input type="text" id="s-intro-vid1-views" placeholder="Views (e.g. +2.5M Views)" style="margin-top:0.3rem">
+                    <input type="text" id="s-intro-vid1-link" placeholder="TikTok Link" style="margin-top:0.3rem">
                 </div>
-                <div class="setting-item">
+                <div class="setting-item" style="margin-top: 1.5rem">
                     <label>Video 2 (MP4 URL)</label>
                     <input type="text" id="s-intro-vid2" placeholder="https://...">
+                    <input type="text" id="s-intro-vid2-title" placeholder="Title (e.g. Sound Promo)" style="margin-top:0.3rem">
+                    <input type="text" id="s-intro-vid2-views" placeholder="Views (e.g. +5.1M Views)" style="margin-top:0.3rem">
+                    <input type="text" id="s-intro-vid2-link" placeholder="TikTok Link" style="margin-top:0.3rem">
                 </div>
-                <div class="setting-item">
+                <div class="setting-item" style="margin-top: 1.5rem">
                     <label>Video 3 (MP4 URL)</label>
                     <input type="text" id="s-intro-vid3" placeholder="https://...">
+                    <input type="text" id="s-intro-vid3-title" placeholder="Title (e.g. Sound Promo)" style="margin-top:0.3rem">
+                    <input type="text" id="s-intro-vid3-views" placeholder="Views (e.g. +1.2M Views)" style="margin-top:0.3rem">
+                    <input type="text" id="s-intro-vid3-link" placeholder="TikTok Link" style="margin-top:0.3rem">
                 </div>
             </div>
 
@@ -252,29 +261,29 @@
     <div id="intro-overlay" class="intro-overlay">
         <div class="intro-cards-container">
             <!-- Card 1 -->
-            <div class="intro-vid-card" id="intro-card-1">
+            <a href="#" target="_blank" class="intro-vid-card" id="intro-card-1">
                 <video autoplay loop muted playsinline id="intro-video-1"></video>
                 <div class="intro-vid-info">
-                    <h4>Viral Sound</h4>
-                    <p>+2.5M Views</p>
+                    <h4 id="intro-vid1-title">Sound Promo</h4>
+                    <p id="intro-vid1-views">Loading...</p>
                 </div>
-            </div>
+            </a>
             <!-- Card 2 -->
-            <div class="intro-vid-card" id="intro-card-2">
+            <a href="#" target="_blank" class="intro-vid-card" id="intro-card-2">
                 <video autoplay loop muted playsinline id="intro-video-2"></video>
                 <div class="intro-vid-info">
-                    <h4>Trending Challenge</h4>
-                    <p>+5.1M Views</p>
+                    <h4 id="intro-vid2-title">Sound Promo</h4>
+                    <p id="intro-vid2-views">Loading...</p>
                 </div>
-            </div>
+            </a>
             <!-- Card 3 -->
-            <div class="intro-vid-card" id="intro-card-3">
+            <a href="#" target="_blank" class="intro-vid-card" id="intro-card-3">
                 <video autoplay loop muted playsinline id="intro-video-3"></video>
                 <div class="intro-vid-info">
-                    <h4>Brand Collab</h4>
-                    <p>+1.2M Views</p>
+                    <h4 id="intro-vid3-title">Sound Promo</h4>
+                    <p id="intro-vid3-views">Loading...</p>
                 </div>
-            </div>
+            </a>
         </div>
         <button id="intro-enter-btn" class="intro-enter-btn">Enter Site <i class="fa-solid fa-arrow-right"></i></button>
     </div>
