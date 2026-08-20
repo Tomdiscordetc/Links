@@ -740,3 +740,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+
+    // Mobile Swipe Logic for Intro
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let currentMobileCardIndex = 0;
+    const introCards = document.querySelectorAll('.intro-vid-card');
+
+    if (introOverlay) {
+        introOverlay.addEventListener('touchstart', e => {
+            if (window.innerWidth > 768) return;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+
+        introOverlay.addEventListener('touchend', e => {
+            if (window.innerWidth > 768) return;
+            touchEndY = e.changedTouches[0].screenY;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Swipe UP (next card)
+            if (deltaY < -40) {
+                if (currentMobileCardIndex < introCards.length) {
+                    introCards[currentMobileCardIndex].classList.add('swiped-up');
+                    currentMobileCardIndex++;
+                    if (currentMobileCardIndex >= introCards.length) {
+                        setTimeout(() => {
+                            if (introEnterBtn) introEnterBtn.click();
+                        }, 400);
+                    }
+                }
+            }
+            // Swipe DOWN (dismiss entire intro)
+            else if (deltaY > 40) {
+                if (introEnterBtn) introEnterBtn.click();
+            }
+        }, {passive: true});
+        
+        introCards.forEach(card => {
+            card.addEventListener('click', e => {
+                if (window.innerWidth <= 768 && Math.abs(touchEndY - touchStartY) > 20) {
+                    e.preventDefault();
+                }
+            });
+        });
+    }

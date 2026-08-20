@@ -634,3 +634,11 @@ body {
         background: var(--card-bg) !important;
     }
 }
+
+/* Swipe animations for mobile intro */
+.intro-vid-card.swiped-up {
+    animation: swipeUpAnim 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+@keyframes swipeUpAnim {
+    to { transform: translateY(-150vh) scale(0.9); opacity: 0; }
+}
