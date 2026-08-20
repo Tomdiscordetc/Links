@@ -1,5 +1,5 @@
 {
-  "avatar": "avatar.jpg",
+  "avatar": "avatar.webp",
   "handle": "xyz.taimo",
   "tagline": "TikTok Sound Promotions",
   "stat1Num": "815K",
@@ -10,7 +10,7 @@
   "socialInstagram": "https://www.instagram.com/xyz.taimo",
   "socialYoutube": "https://www.youtube.com/@xyz_taimo",
   "socialFacebook": "https://www.facebook.com/profile.php?id=61590058673601",
-  "bgImage": "bg-custom.png",
+  "bgImage": "bg-custom.webp",
   "musicUrl": "bg-music.m4a",
   "introVid1": "intro1.mp4",
   "introVid1Title": "Sound Promo",

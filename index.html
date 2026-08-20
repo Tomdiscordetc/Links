@@ -20,8 +20,17 @@
     <meta name="twitter:title" content="xyz.taimo | TikTok Sound Promotions">
     <meta name="twitter:description" content="Click here for Business Inquiries, Viral Sounds, and International Collaborations. 815K+ Followers.">
     <meta name="twitter:image" content="https://tomdiscordetc.github.io/Links/og-image.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -256,17 +265,13 @@
 
             <!-- Global Backend Setup -->
             <div class="settings-section">
-                <h3 class="settings-section-title">Global Backend</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Enter your GitHub Personal Access Token to push changes globally so all visitors see them.</p>
-                <div class="setting-item">
-                    <label>GitHub PAT (Classic)</label>
-                    <input type="password" id="s-github-token" placeholder="ghp_...">
-                </div>
+                <h3 class="settings-section-title">Global Settings</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">For security reasons on GitHub Pages, live-saving via PAT is disabled. Click "Export & Save" to download your updated <code>data.json</code>, then upload it to your GitHub repository.</p>
             </div>
             
         </div>
         <div class="settings-footer">
-            <button id="settings-save" class="settings-save-btn">Save Changes</button>
+            <button id="settings-save" class="settings-save-btn">Export & Save (data.json)</button>
             <button id="settings-test-intro" class="settings-save-btn" style="background: rgba(255,255,255,0.1); color: var(--text-primary); border: 1px solid var(--card-border);">Test Intro</button>
             <button id="settings-reset" class="settings-reset-btn">Reset to Default</button>
         </div>
@@ -277,7 +282,7 @@
         <div class="intro-cards-container">
             <!-- Card 1 -->
             <a href="#" target="_blank" class="intro-vid-card" id="intro-card-1">
-                <video autoplay loop muted playsinline id="intro-video-1"></video>
+                <video loop muted playsinline preload="none" id="intro-video-1"></video>
                 <div class="intro-vid-info">
                     <h4 id="intro-vid1-title">Sound Promo</h4>
                     <p id="intro-vid1-views">Loading...</p>
@@ -285,7 +290,7 @@
             </a>
             <!-- Card 2 -->
             <a href="#" target="_blank" class="intro-vid-card" id="intro-card-2">
-                <video autoplay loop muted playsinline id="intro-video-2"></video>
+                <video loop muted playsinline preload="none" id="intro-video-2"></video>
                 <div class="intro-vid-info">
                     <h4 id="intro-vid2-title">Sound Promo</h4>
                     <p id="intro-vid2-views">Loading...</p>
@@ -293,7 +298,7 @@
             </a>
             <!-- Card 3 -->
             <a href="#" target="_blank" class="intro-vid-card" id="intro-card-3">
-                <video autoplay loop muted playsinline id="intro-video-3"></video>
+                <video loop muted playsinline preload="none" id="intro-video-3"></video>
                 <div class="intro-vid-info">
                     <h4 id="intro-vid3-title">Sound Promo</h4>
                     <p id="intro-vid3-views">Loading...</p>
@@ -307,7 +312,7 @@
     <div class="layout-wrapper">
         <aside class="profile-sidebar spring-in">
             <div class="avatar-container interactive-hover">
-                <img src="avatar.jpg" alt="xyz.taimo" class="avatar" id="page-avatar">
+                <img src="avatar.webp" alt="xyz.taimo" class="avatar" id="page-avatar">
             </div>
             <h1 class="handle" id="page-handle">xyz.taimo</h1>
             <p class="tagline" id="page-tagline">TikTok Sound Promotions</p>

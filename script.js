@@ -11,72 +11,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     async function loadData() {
         try {
-            const response = await fetch(`data.json?t=${new Date().getTime()}`);
+            const response = await fetch('data.json');
             if (response.ok) {
                 DEFAULTS = await response.json();
             }
         } catch (e) {
             console.error("Failed to load data.json", e);
         }
-        currentData = JSON.parse(JSON.stringify(DEFAULTS)); // Deep copy
+        currentData = structuredClone(DEFAULTS);
         applyToPage(currentData);
     }
 
     loadData();
 
-    async function saveToGitHub(data, token) {
-        const btn = document.getElementById('settings-save');
-        const originalText = btn.textContent;
-        btn.textContent = 'Saving...';
-        btn.disabled = true;
-
-        const repo = 'Tomdiscordetc/Links'; // Hardcoded based on current repo
-        const path = 'data.json';
-        const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-        
-        try {
-            // 1. Get current file SHA
-            const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-            let sha = '';
-            if (getRes.ok) {
-                const getJson = await getRes.json();
-                sha = getJson.sha;
-            } else if (getRes.status !== 404) {
-                throw new Error('Invalid GitHub Token or Repo permissions.');
-            }
-            
-            // 2. Upload new file
-            // Note: Use TextEncoder and btoa for proper utf-8 to base64 encoding
-            const str = JSON.stringify(data, null, 2);
-            const bytes = new TextEncoder().encode(str);
-            const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
-            const content = btoa(binString);
-
-            const putRes = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: "Admin update via Settings Panel",
-                    content: content,
-                    sha: sha
-                })
-            });
-            
-            if (putRes.ok) {
-                alert('Success! Changes saved globally. It will take 1-2 minutes for the live site to update.');
-            } else {
-                const err = await putRes.json();
-                alert('Error saving to GitHub: ' + err.message);
-            }
-        } catch(e) {
-            alert('Error: ' + e.message);
-        }
-        
-        btn.textContent = originalText;
-        btn.disabled = false;
+    function downloadDataJson(data) {
+        const str = JSON.stringify(data, null, 2);
+        const blob = new Blob([str], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('data.json has been downloaded! Please commit and push it to your GitHub repository to apply changes globally.');
     }
 
     // ==========================================
@@ -84,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function applyToPage(data) {
         // Avatar
-        document.getElementById('page-avatar').src = data.avatar || 'avatar.jpg';
+        document.getElementById('page-avatar').src = data.avatar || 'avatar.webp';
         // Profile text
         document.getElementById('page-handle').textContent = data.handle;
         document.getElementById('page-tagline').textContent = data.tagline;
@@ -154,14 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!links) links = [];
         const container = document.getElementById('page-links');
         container.innerHTML = '';
+        const frag = document.createDocumentFragment();
         links.forEach(link => {
             const a = document.createElement('a');
             a.href = link.url || '#';
             a.target = '_blank';
+            a.rel = 'noopener noreferrer';
             a.className = 'link-card interactive-hover';
             a.innerHTML = `
                 <div class="link-content">
-                    <div class="icon-wrapper"><i class="${link.icon}"></i></div>
+                    <div class="icon-wrapper"><i class="${escapeAttr(link.icon)}"></i></div>
                     <div class="link-text">
                         <span class="link-title">${escapeHtml(link.title)}</span>
                         <span class="link-sub">${escapeHtml(link.sub)}</span>
@@ -169,8 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <i class="fa-solid fa-chevron-right chevron"></i>
             `;
-            container.appendChild(a);
+            frag.appendChild(a);
         });
+        container.appendChild(frag);
     }
 
     function escapeHtml(str) {
@@ -328,9 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('s-intro-vid3-views').value = data.introVid3Views || '';
         document.getElementById('s-intro-vid3-link').value = data.introVid3Link || '';
         
-        // Restore GitHub token from localStorage if exists
-        document.getElementById('s-github-token').value = localStorage.getItem('github_pat') || '';
-        
         renderLinkEditor(data.links);
     }
 
@@ -338,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderLinkEditor(links) {
         const container = document.getElementById('link-cards-editor');
         container.innerHTML = '';
+        const frag = document.createDocumentFragment();
         links.forEach((link, index) => {
             const card = document.createElement('div');
             card.className = 'link-editor-card';
@@ -369,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.remove();
             });
         });
+        container.appendChild(frag);
     }
 
     function escapeAttr(str) { return (str || '').replace(/"/g, '&quot;'); }
@@ -479,15 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
             links: links,
         };
         
-        const token = document.getElementById('s-github-token').value.trim();
-        if (token) {
-            localStorage.setItem('github_pat', token);
-            saveToGitHub(currentData, token);
-        } else {
-            alert("Warning: No GitHub Token provided. Changes are only saved locally and won't be visible to others.");
-            // Still save locally just in case
-            localStorage.setItem('linkpage_data', JSON.stringify(currentData));
-        }
+        localStorage.setItem('linkpage_data', JSON.stringify(currentData));
+        downloadDataJson(currentData);
 
         applyToPage(currentData);
         closeSettings();
@@ -503,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('settings-reset').addEventListener('click', () => {
         if (confirm('Reset to currently published global settings?')) {
             localStorage.removeItem('linkpage_data');
-            currentData = JSON.parse(JSON.stringify(DEFAULTS));
+            currentData = structuredClone(DEFAULTS);
             applyToPage(currentData);
             closeSettings();
         }
@@ -579,12 +533,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start animation after a short delay so videos can load
         setTimeout(() => {
             introOverlay.classList.add('playing');
+            document.querySelectorAll('.intro-vid-card video').forEach(v => {
+                v.play().catch(e => console.log('Autoplay prevented', e));
+            });
         }, 100);
 
         introEnterBtn.addEventListener('click', () => {
             introOverlay.classList.add('hidden');
             document.body.style.overflow = '';
             sessionStorage.setItem('intro_played', 'true');
+            
+            document.querySelectorAll('.intro-vid-card video').forEach(v => {
+                v.pause();
+                v.removeAttribute('src'); // Free memory
+                v.load();
+            });
+
             // Starting audio from this button click will bypass autoplay blocks!
             audio.play().then(() => updatePlayIcon()).catch(e => console.log(e));
         });
