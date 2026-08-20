@@ -30,17 +30,17 @@
     --bg-gradient: none;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+html { box-sizing: border-box; scroll-behavior: smooth; }
+*, *:before, *:after { box-sizing: inherit; margin: 0; padding: 0; }
 
 body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-base);
     color: var(--text-primary);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-    transition: background-color 0.5s ease, color 0.5s ease;
-    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    background-size: cover; background-position: center; background-attachment: fixed;
+    line-height: 1.5; -webkit-font-smoothing: antialiased;
 }
 
 .background-layer {
@@ -117,8 +117,9 @@ body {
     border-left: 1px solid var(--card-border);
     z-index: 2001;
     display: flex; flex-direction: column;
-    transition: right 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: -8px 0 40px rgba(0,0,0,0.3);
+    will-change: right;
 }
 .settings-panel.active { right: 0; }
 
@@ -300,6 +301,9 @@ body {
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     box-shadow: var(--shadow);
 }
+.link-card:hover {
+    background: var(--input-bg);
+}
 .link-content { display: flex; align-items: center; gap: 0.9rem; }
 
 .icon-wrapper {
@@ -376,14 +380,23 @@ body {
 /* =========================================
    ANIMATIONS
    ========================================= */
-.interactive-hover { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
-.interactive-hover:hover { transform: scale(1.025); }
-.interactive-hover:active { transform: scale(0.975); }
+/* Buttery smooth apple ease-out */
+.interactive-hover { 
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+    cursor: pointer; 
+    will-change: transform;
+}
+.interactive-hover:hover { transform: scale(1.02); }
+.interactive-hover:active { transform: scale(0.98); }
 
-.spring-in { opacity: 0; transform: translateY(16px) scale(0.99); animation: springIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-.delay-1 { animation-delay: 0.12s; }
-.delay-2 { animation-delay: 0.24s; }
-@keyframes springIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+.spring-in { 
+    opacity: 0; transform: translateY(12px) scale(0.99); 
+    will-change: transform, opacity;
+    animation: smoothIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+@keyframes smoothIn { to { opacity: 1; transform: translateY(0) scale(1); } }
 
 /* =========================================
    LOGIN MODAL
