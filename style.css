@@ -459,8 +459,32 @@ body {
     border: none; border-radius: 10px;
     font-family: inherit; font-size: 0.95rem; font-weight: 600;
     cursor: pointer; transition: opacity 0.2s;
+    text-decoration: none; display: inline-block;
 }
 .login-btn:hover { opacity: 0.85; }
+
+/* Preview Modal Specifics */
+.preview-card { position: relative; padding-top: 3.5rem; }
+.preview-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: var(--input-bg); border: none; color: var(--text-secondary);
+    width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, background 0.2s;
+}
+.preview-close:hover { color: var(--text-primary); background: var(--card-border); }
+.preview-platform-icon {
+    position: absolute; top: 1rem; left: 1.2rem;
+    font-size: 1.5rem; color: var(--text-primary);
+}
+.preview-avatar {
+    width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem;
+    border: 2px solid var(--card-border); overflow: hidden;
+}
+.preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.preview-tagline { margin-bottom: 1.5rem !important; }
+.preview-btn { margin-top: 0.5rem; }
+.preview-stats { margin-bottom: 1.5rem; }
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }

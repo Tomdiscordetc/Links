@@ -525,4 +525,72 @@ document.addEventListener('DOMContentLoaded', () => {
         else this.classList.remove('has-value');
     });
 
+    // ==========================================
+    // SOCIAL PREVIEW MODAL
+    // ==========================================
+    const socialPreviewModal = document.getElementById('social-preview-modal');
+    const previewClose = document.getElementById('preview-close');
+    const previewPlatformIcon = document.getElementById('preview-platform-icon');
+    const previewAvatarImg = document.getElementById('preview-avatar-img');
+    const previewHandle = document.getElementById('preview-handle');
+    const previewTagline = document.getElementById('preview-tagline');
+    const previewStat1Num = document.getElementById('preview-stat1-num');
+    const previewStat1Label = document.getElementById('preview-stat1-label');
+    const previewStat2Num = document.getElementById('preview-stat2-num');
+    const previewStat2Label = document.getElementById('preview-stat2-label');
+    const previewLinkBtn = document.getElementById('preview-link-btn');
+
+    function openSocialPreview(platform, url, iconClass) {
+        if (!url || url === '#' || url === '') return; // Don't open if no URL
+
+        // Populate modal
+        previewPlatformIcon.innerHTML = `<i class="${iconClass}"></i>`;
+        previewAvatarImg.src = currentData.avatar;
+        previewHandle.textContent = currentData.handle;
+        
+        if (platform === 'tiktok') previewTagline.textContent = "Check out my latest sound promos!";
+        else if (platform === 'instagram') previewTagline.textContent = "Follow me for behind the scenes!";
+        else if (platform === 'youtube') previewTagline.textContent = "Subscribe for full videos & mixes!";
+        else previewTagline.textContent = currentData.tagline;
+
+        previewStat1Num.textContent = currentData.stat1Num;
+        previewStat1Label.textContent = currentData.stat1Label;
+        previewStat2Num.textContent = currentData.stat2Num;
+        previewStat2Label.textContent = currentData.stat2Label;
+        
+        previewLinkBtn.href = url;
+
+        // Show modal
+        socialPreviewModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSocialPreview() {
+        socialPreviewModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    previewClose.addEventListener('click', closeSocialPreview);
+    socialPreviewModal.addEventListener('click', (e) => {
+        if (e.target === socialPreviewModal) closeSocialPreview();
+    });
+
+    // Intercept clicks on social icons
+    const socialIcons = document.querySelectorAll('.social-icon');
+    socialIcons.forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            const url = icon.getAttribute('href');
+            if (url && url !== '#') {
+                e.preventDefault();
+                let platform = '';
+                let iconClass = '';
+                if (icon.classList.contains('tiktok')) { platform = 'tiktok'; iconClass = 'fa-brands fa-tiktok'; }
+                else if (icon.classList.contains('instagram')) { platform = 'instagram'; iconClass = 'fa-brands fa-instagram'; }
+                else if (icon.classList.contains('youtube')) { platform = 'youtube'; iconClass = 'fa-brands fa-youtube'; }
+                
+                openSocialPreview(platform, url, iconClass);
+            }
+        });
+    });
+
 });
