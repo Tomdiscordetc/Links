@@ -739,9 +739,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-});
-
-
     // Mobile Swipe Logic for Intro
     let touchStartY = 0;
     let touchEndY = 0;
@@ -785,3 +782,5 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+});
