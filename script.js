@@ -441,11 +441,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     audio.volume = volumeSlider.value;
 
-    playPauseBtn.addEventListener('click', () => {
-        if (audio.paused) { audio.play(); playPauseIcon.className = 'fa-solid fa-pause'; }
-        else { audio.pause(); playPauseIcon.className = 'fa-solid fa-play'; }
+    function updatePlayIcon() {
+        playPauseIcon.className = audio.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause';
+    }
+
+    // Try to autoplay on load (might be blocked by browser)
+    audio.play().then(() => updatePlayIcon()).catch(() => {
+        // Autoplay blocked by browser. Wait for first user interaction.
+        const startAudio = () => {
+            audio.play();
+            updatePlayIcon();
+            document.removeEventListener('click', startAudio);
+        };
+        document.addEventListener('click', startAudio);
     });
-    muteBtn.addEventListener('click', () => { audio.muted = !audio.muted; updateVolumeIcon(); });
+
+    playPauseBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent document click from firing
+        if (audio.paused) { audio.play(); updatePlayIcon(); }
+        else { audio.pause(); updatePlayIcon(); }
+    });
+    muteBtn.addEventListener('click', (e) => { 
+        e.stopPropagation();
+        audio.muted = !audio.muted; 
+        updateVolumeIcon(); 
+    });
     volumeSlider.addEventListener('input', (e) => {
         audio.volume = e.target.value;
         if (audio.volume > 0) audio.muted = false;
