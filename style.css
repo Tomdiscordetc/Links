@@ -14,6 +14,7 @@
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     --input-bg: rgba(255, 255, 255, 0.08);
     --bg-gradient: none;
+    --bg-overlay: rgba(0, 0, 0, 0.5);
     --overlay-bg: rgba(0, 0, 0, 0.85);
 }
 
@@ -29,6 +30,7 @@
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     --input-bg: rgba(0, 0, 0, 0.05);
     --bg-gradient: none;
+    --bg-overlay: rgba(255, 255, 255, 0.5);
     --overlay-bg: rgba(255, 255, 255, 0.85);
 }
 

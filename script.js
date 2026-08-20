@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Background
         const bgLayer = document.getElementById('bg-layer');
         if (data.bgImage) {
-            bgLayer.style.backgroundImage = `url('${data.bgImage}')`;
+            bgLayer.style.backgroundImage = `linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('${data.bgImage}')`;
             bgLayer.style.backgroundSize = 'cover';
             bgLayer.style.backgroundPosition = 'center';
         } else {
