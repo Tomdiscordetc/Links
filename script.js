@@ -88,6 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Intro Videos
         const introWillPlay = !sessionStorage.getItem('intro_played');
+        // First frame of the bundled clips - shown until the video paints, so a
+        // slow connection or a blocked autoplay never leaves a black card.
+        const INTRO_POSTERS = {
+            'intro1.mp4': 'intro1-poster.webp',
+            'intro2.mp4': 'intro2-poster.webp',
+            'intro3.mp4': 'intro3-poster.webp'
+        };
         if (introWillPlay && document.getElementById('intro-video-1')) {
             const v1 = document.getElementById('intro-video-1');
             const v2 = document.getElementById('intro-video-2');
@@ -101,16 +108,19 @@ document.addEventListener('DOMContentLoaded', () => {
             v3.preload = wideIntro ? 'auto' : 'none';
 
             if (v1.getAttribute('src') !== (data.introVid1 || '')) { v1.setAttribute('src', data.introVid1 || ''); }
+            v1.poster = INTRO_POSTERS[data.introVid1] || '';
             document.getElementById('intro-vid1-title').innerText = data.introVid1Title || 'Sound Promo';
             document.getElementById('intro-vid1-views').innerText = data.introVid1Views || '';
             document.getElementById('intro-card-1').href = data.introVid1Link || '#';
 
             if (v2.getAttribute('src') !== (data.introVid2 || '')) { v2.setAttribute('src', data.introVid2 || ''); }
+            v2.poster = INTRO_POSTERS[data.introVid2] || '';
             document.getElementById('intro-vid2-title').innerText = data.introVid2Title || 'Sound Promo';
             document.getElementById('intro-vid2-views').innerText = data.introVid2Views || '';
             document.getElementById('intro-card-2').href = data.introVid2Link || '#';
 
             if (v3.getAttribute('src') !== (data.introVid3 || '')) { v3.setAttribute('src', data.introVid3 || ''); }
+            v3.poster = INTRO_POSTERS[data.introVid3] || '';
             document.getElementById('intro-vid3-title').innerText = data.introVid3Title || 'Sound Promo';
             document.getElementById('intro-vid3-views').innerText = data.introVid3Views || '';
             document.getElementById('intro-card-3').href = data.introVid3Link || '#';
@@ -606,8 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateIntroVideos() {
         introVideos.forEach((v, i) => {
             if (!isMobileIntro() || i === deckIndex) {
-                const p = v.play();
-                if (p && p.catch) p.catch(() => {});
+                playIntroVideo(v, introCards[i]);
             } else {
                 v.pause();
                 if (Math.abs(i - deckIndex) === 1 && v.preload === 'none') {
@@ -616,6 +625,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    }
+
+    // Data saver, low power mode or a strict autoplay policy can refuse play().
+    // The card then keeps its poster and a play badge, and starts on first tap.
+    let introPlayRetry = null;
+
+    function playIntroVideo(v, card) {
+        v.muted = true;
+        v.playsInline = true;
+        if (v.preload === 'none') v.preload = 'auto';
+        if (v.readyState === 0) v.load();
+        const p = v.play();
+        if (!p || !p.then) return;
+        p.then(() => {
+            if (card) card.classList.remove('is-blocked');
+        }).catch(() => {
+            if (card) card.classList.add('is-blocked');
+            armIntroPlayRetry();
+        });
+    }
+
+    function armIntroPlayRetry() {
+        if (introPlayRetry) return;
+        introPlayRetry = () => {
+            introOverlay.removeEventListener('pointerdown', introPlayRetry);
+            introPlayRetry = null;
+            updateIntroVideos();
+        };
+        introOverlay.addEventListener('pointerdown', introPlayRetry);
     }
 
     function setDeckIndex(i) {
