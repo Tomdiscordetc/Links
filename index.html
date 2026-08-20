@@ -22,6 +22,17 @@
         <button id="play-pause-btn" class="control-btn" title="Play/Pause Music">
             <i class="fa-solid fa-play"></i>
         </button>
+        <div class="track-info">
+            <div class="track-title" id="track-title">Chill Lofi Beat</div>
+            <div class="track-progress-container">
+                <span id="track-current">0:00</span>
+                <div class="track-progress-bar">
+                    <div class="track-progress-fill" id="track-progress-fill"></div>
+                </div>
+                <span id="track-total">0:00</span>
+            </div>
+        </div>
+        <div class="divider"></div>
         <div class="volume-control">
             <button id="mute-btn" class="control-btn" title="Mute/Unmute">
                 <i class="fa-solid fa-volume-high"></i>
@@ -181,6 +192,10 @@
                 <div class="setting-item">
                     <label>Music URL <span class="setting-hint">(MP3 link)</span></label>
                     <input type="text" id="s-music-url" placeholder="https://...mp3">
+                </div>
+                <div class="setting-item">
+                    <label>Song Title</label>
+                    <input type="text" id="s-music-title" placeholder="Song Title">
                 </div>
             </div>
 

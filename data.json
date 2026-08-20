@@ -18,10 +18,7 @@
   "formspree": "https://formspree.io/f/your_formspree_id",
   "formTitle": "Business Inquiry",
   "formDesc": "Sound promotion & collaboration requests.",
-  "links": [
-    { "icon": "fa-brands fa-tiktok", "title": "TikTok", "sub": "@xyz.taimo", "url": "https://tiktok.com/@xyz.taimo" },
-    { "icon": "fa-solid fa-chart-line", "title": "Latest Promotion", "sub": "Current campaign", "url": "#" },
-    { "icon": "fa-brands fa-spotify", "title": "Spotify", "sub": "Curated playlist", "url": "#" },
-    { "icon": "fa-solid fa-briefcase", "title": "Media Kit", "sub": "Rates & reach", "url": "#" }
-  ]
+  "musicTitle": "Chill Lofi Beat",
+  "musicArtist": "Unknown",
+  "links": []
 }

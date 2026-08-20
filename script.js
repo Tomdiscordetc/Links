@@ -132,6 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Links
         renderPageLinks(data.links);
+        
+        // Track Title
+        if (document.getElementById('track-title')) {
+            document.getElementById('track-title').innerText = data.musicTitle || 'Background Music';
+        }
     }
 
     function renderPageLinks(links) {
@@ -295,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('s-social-facebook').value = data.socialFacebook || '';
         document.getElementById('s-bg-image').value = data.bgImage || '';
         document.getElementById('s-music-url').value = data.musicUrl || '';
+        document.getElementById('s-music-title').value = data.musicTitle || '';
         document.getElementById('s-formspree').value = data.formspree || '';
         document.getElementById('s-form-title').value = data.formTitle || '';
         document.getElementById('s-form-desc').value = data.formDesc || '';
@@ -434,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
             socialFacebook: document.getElementById('s-social-facebook').value,
             bgImage: document.getElementById('s-bg-image').value,
             musicUrl: document.getElementById('s-music-url').value,
+            musicTitle: document.getElementById('s-music-title').value,
             formspree: document.getElementById('s-formspree').value,
             formTitle: document.getElementById('s-form-title').value,
             formDesc: document.getElementById('s-form-desc').value,
@@ -578,6 +585,24 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (audio.volume < 0.5) muteIcon.className = 'fa-solid fa-volume-low';
         else muteIcon.className = 'fa-solid fa-volume-high';
     }
+
+    const trackCurrent = document.getElementById('track-current');
+    const trackTotal = document.getElementById('track-total');
+    const trackProgressFill = document.getElementById('track-progress-fill');
+    
+    audio.addEventListener('timeupdate', () => {
+        if (!audio.duration) return;
+        const currentMins = Math.floor(audio.currentTime / 60);
+        const currentSecs = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+        const totalMins = Math.floor(audio.duration / 60);
+        const totalSecs = Math.floor(audio.duration % 60).toString().padStart(2, '0');
+        
+        trackCurrent.innerText = `${currentMins}:${currentSecs}`;
+        trackTotal.innerText = `${totalMins}:${totalSecs}`;
+        
+        const progressPercent = (audio.currentTime / audio.duration) * 100;
+        trackProgressFill.style.width = `${progressPercent}%`;
+    });
 
     // ==========================================
     // FORM HANDLER

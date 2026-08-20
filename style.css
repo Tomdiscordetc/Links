@@ -71,6 +71,31 @@ body {
 }
 .dynamic-island:hover { transform: translateX(-50%) scale(1.03); }
 
+.track-info {
+    display: flex; flex-direction: column; justify-content: center;
+    width: 0; overflow: hidden; opacity: 0; white-space: nowrap;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.dynamic-island:hover .track-info { width: 140px; opacity: 1; padding: 0 0.5rem; }
+
+.track-title {
+    font-size: 0.75rem; font-weight: 600; color: var(--text-primary);
+    margin-bottom: 0.2rem; overflow: hidden; text-overflow: ellipsis;
+}
+.track-progress-container {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.6rem; color: var(--text-tertiary); font-variant-numeric: tabular-nums;
+}
+.track-progress-bar {
+    flex: 1; height: 3px; background: var(--card-border); border-radius: 2px;
+    position: relative; overflow: hidden;
+}
+.track-progress-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    background: var(--text-primary); width: 0%;
+    transition: width 0.1s linear;
+}
+
 .control-btn {
     background: none; border: none;
     color: var(--text-primary); font-size: 1.05rem;
@@ -506,8 +531,8 @@ body {
 
 /* Staggered Slide In Animations */
 .intro-overlay.playing #intro-card-1 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; }
-.intro-overlay.playing #intro-card-2 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; }
-.intro-overlay.playing #intro-card-3 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
+.intro-overlay.playing #intro-card-2 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards; }
+.intro-overlay.playing #intro-card-3 { animation: introSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards; }
 
 @keyframes introSlideIn {
     to { opacity: 1; transform: translateY(0) scale(1); }
