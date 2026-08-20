@@ -121,9 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Intro Videos
         if (document.getElementById('intro-video-1')) {
-            document.getElementById('intro-video-1').src = data.introVid1 || '';
-            document.getElementById('intro-video-2').src = data.introVid2 || '';
-            document.getElementById('intro-video-3').src = data.introVid3 || '';
+            const v1 = document.getElementById('intro-video-1');
+            const v2 = document.getElementById('intro-video-2');
+            const v3 = document.getElementById('intro-video-3');
+            
+            if (v1.src !== (data.introVid1 || '')) { v1.src = data.introVid1 || ''; v1.load(); }
+            if (v2.src !== (data.introVid2 || '')) { v2.src = data.introVid2 || ''; v2.load(); }
+            if (v3.src !== (data.introVid3 || '')) { v3.src = data.introVid3 || ''; v3.load(); }
         }
         
         // Links
@@ -450,6 +454,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         applyToPage(currentData);
         closeSettings();
+    });
+
+    // Test Intro
+    document.getElementById('settings-test-intro').addEventListener('click', () => {
+        sessionStorage.removeItem('intro_played');
+        location.reload();
     });
 
     // Reset
