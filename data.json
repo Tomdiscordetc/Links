@@ -1,33 +1,100 @@
 {
   "avatar": "avatar.webp",
   "handle": "xyz.taimo",
-  "tagline": "TikTok Sound Promotions",
+  "tagline": "TikTok sound promotion and international collaborations for labels, artists and brands.",
+  "availability": "Open for bookings",
   "stat1Num": "815K",
   "stat1Label": "Followers",
   "stat2Num": "50.9M",
   "stat2Label": "Likes",
+  "heroKicker": "Sound promotion · Worldwide",
+  "heroTitle": "Put your sound in front of 815,000 people.",
+  "heroBody": "Paid placements, organic pushes and creator collaborations on TikTok. Send the track, the target market and the timing — you get a plan and a price the same week.",
+  "ctaPrimary": "Business inquiry",
+  "ctaSecondary": "See results",
+  "closeTitle": "Ready when your release is.",
+  "closeBody": "Campaign slots are booked two to three weeks ahead. Tell me the release date and I will hold one.",
+  "footerLeft": "© 2026 xyz.taimo",
+  "footerRight": "Response within 24h",
   "socialTiktok": "https://tiktok.com/@xyz.taimo",
   "socialInstagram": "https://www.instagram.com/xyz.taimo",
   "socialYoutube": "https://www.youtube.com/@xyz_taimo",
   "socialFacebook": "https://www.facebook.com/profile.php?id=61590058673601",
   "bgImage": "bg-custom.webp",
   "musicUrl": "bg-music.m4a",
-  "introVid1": "intro1.mp4",
-  "introVid1Title": "Sound Promo",
-  "introVid1Views": "1.2M Views",
-  "introVid1Link": "https://www.tiktok.com/@xyz.taimo/video/7657680462814465312?is_from_webapp=1&sender_device=pc&web_id=7640537982617028118",
-  "introVid2": "intro2.mp4",
-  "introVid2Title": "Sound Promo",
-  "introVid2Views": "2.5M Views",
-  "introVid2Link": "https://www.tiktok.com/@xyz.taimo/video/7264718135163407649?is_from_webapp=1&sender_device=pc&web_id=7640537982617028118",
-  "introVid3": "intro3.mp4",
-  "introVid3Title": "Sound Promo",
-  "introVid3Views": "5.1M Views",
-  "introVid3Link": "https://www.tiktok.com/@xyz.taimo/video/7262513875189304609?is_from_webapp=1&sender_device=pc&web_id=7640537982617028118",
-  "formspree": "https://formspree.io/f/xljrzbqw",
-  "formTitle": "Business Inquiry",
-  "formDesc": "Sound promotion & collaboration requests.",
   "musicTitle": "Chill Lofi Beat",
-  "musicArtist": "Unknown",
-  "links": []
+  "musicArtist": "Background",
+  "musicVolume": 0.12,
+  "formspree": "https://formspree.io/f/xljrzbqw",
+  "formTitle": "Business inquiry",
+  "formDesc": "Sound promotion and collaboration requests. Straight to my inbox.",
+  "accent": "#ec3013",
+  "links": [
+    {
+      "label": "Book a sound promo",
+      "sub": "Packages from one creator to a full wave",
+      "url": "#inquiry",
+      "tag": "Start here"
+    },
+    {
+      "label": "TikTok — @xyz.taimo",
+      "sub": "815K followers · 50.9M likes",
+      "url": "https://tiktok.com/@xyz.taimo",
+      "tag": ""
+    },
+    {
+      "label": "Instagram",
+      "sub": "Behind the campaigns",
+      "url": "https://www.instagram.com/xyz.taimo",
+      "tag": ""
+    },
+    {
+      "label": "YouTube",
+      "sub": "Long-form cuts and edits",
+      "url": "https://www.youtube.com/@xyz_taimo",
+      "tag": ""
+    },
+    {
+      "label": "Facebook",
+      "sub": "Page and campaign updates",
+      "url": "https://www.facebook.com/profile.php?id=61590058673601",
+      "tag": ""
+    }
+  ],
+  "videos": [
+    {
+      "poster": "intro1-poster.webp",
+      "title": "Sound promo",
+      "views": "1.2M",
+      "url": "https://www.tiktok.com/@xyz.taimo/video/7657680462814465312"
+    },
+    {
+      "poster": "intro2-poster.webp",
+      "title": "Sound promo",
+      "views": "2.5M",
+      "url": "https://www.tiktok.com/@xyz.taimo/video/7264718135163407649"
+    },
+    {
+      "poster": "intro3-poster.webp",
+      "title": "Sound promo",
+      "views": "5.1M",
+      "url": "https://www.tiktok.com/@xyz.taimo/video/7262513875189304609"
+    }
+  ],
+  "order": {
+    "links": 2,
+    "work": 3,
+    "cta": 4
+  },
+  "fx": {
+    "cursor": true,
+    "magnet": true,
+    "spotlight": true,
+    "tilt": true,
+    "reveal": true,
+    "scramble": true,
+    "grain": true,
+    "marquee": true,
+    "click": true
+  }
 }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>xyz.taimo | TikTok Sound Promotions</title>
     <meta name="description" content="Professional TikTok Sound Promotions & International Collaborations. 815K+ Followers. Business inquiries welcome.">
-    
+
     <!-- OpenGraph / Discord / WhatsApp Preview Meta Tags -->
     <meta property="og:title" content="xyz.taimo | TikTok Sound Promotions">
     <meta property="og:description" content="Click here for Business Inquiries, Viral Sounds, and International Collaborations. 815K+ Followers.">
@@ -13,8 +13,8 @@
     <meta property="og:url" content="https://tomdiscordetc.github.io/Links/">
     <meta property="og:type" content="website">
     <meta name="color-scheme" content="dark light">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#08080a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f4f2ee" media="(prefers-color-scheme: light)">
 
     <!-- Favicons -->
     <link rel="icon" href="avatar.webp" type="image/webp">
@@ -25,398 +25,207 @@
     <meta name="twitter:title" content="xyz.taimo | TikTok Sound Promotions">
     <meta name="twitter:description" content="Click here for Business Inquiries, Viral Sounds, and International Collaborations. 815K+ Followers.">
     <meta name="twitter:image" content="https://tomdiscordetc.github.io/Links/og-image.jpg">
-    <!-- Font Awesome, self-hosted: no third party request -->
-    <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="assets/fontawesome/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
-    
+
+    <!-- Archivo, self-hosted: no third party request -->
+    <link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 
     <!-- Runs before first paint: avoids a flash of the wrong theme / of the intro -->
     <script>
         (function () {
+            var STORE = 'xyztaimo_linkpage_v1';
             try {
-                var t = localStorage.getItem('theme');
+                var t = localStorage.getItem(STORE + '_theme');
                 if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', t);
-                if (sessionStorage.getItem('intro_played')) {
+                if (localStorage.getItem(STORE + '_fx') === '0') {
+                    document.documentElement.setAttribute('data-fx', 'off');
+                }
+                if (sessionStorage.getItem(STORE + '_intro')) {
                     document.documentElement.classList.add('intro-done');
                 }
             } catch (e) {}
         })();
     </script>
+    <style>
+        html.intro-done #intro { display: none; }
+    </style>
 </head>
+
 <body>
-    <!-- Background -->
-    <div class="background-layer" id="bg-layer"></div>
+<div id="root" data-fx="on"
+     style="min-height:100vh;background:var(--color-bg);color:var(--color-text);position:relative;isolation:isolate;background-size:cover;background-position:center;background-attachment:fixed">
 
-    <!-- Control Bar -->
-    <div class="dynamic-island" id="dynamic-island">
-        <button id="theme-toggle" class="control-btn" type="button" title="Light/Dark Mode" aria-label="Toggle light or dark mode">
-            <i class="fa-solid fa-moon"></i>
-        </button>
-        <div class="divider"></div>
-        <button id="play-pause-btn" class="control-btn" type="button" title="Play/Pause Music" aria-label="Play or pause music">
-            <i class="fa-solid fa-play"></i>
-        </button>
-        <div class="track-info">
-            <div class="track-title" id="track-title">Chill Lofi Beat</div>
-            <div class="track-progress-container">
-                <span id="track-current">0:00</span>
-                <div class="track-progress-bar">
-                    <div class="track-progress-fill" id="track-progress-fill"></div>
-                </div>
-                <span id="track-total">0:00</span>
-            </div>
-        </div>
-        <div class="divider"></div>
-        <div class="volume-control">
-            <button id="mute-btn" class="control-btn" type="button" title="Mute/Unmute" aria-label="Mute or unmute">
-                <i class="fa-solid fa-volume-high"></i>
-            </button>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.1" aria-label="Volume">
-        </div>
-        <!-- Settings button hidden – access via triple-click on footer -->
-        <button id="settings-toggle" class="control-btn" style="display:none;"></button>
+    <!-- Mouse spotlight -->
+    <div aria-hidden="true" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1">
+        <div id="spot" data-spot=""
+             style="position:absolute;top:0;left:0;width:620px;height:620px;margin:-310px 0 0 -310px;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--color-accent) 15%,transparent) 0%,transparent 62%);transition:opacity .5s ease;will-change:transform"></div>
     </div>
 
-    <!-- Audio Player -->
-    <audio id="bg-music" loop preload="none"></audio>
+    <!-- Film grain + custom cursor -->
+    <div aria-hidden="true" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:60">
+        <div id="grain" data-grain="" style="position:absolute;inset:0;opacity:.05"></div>
+        <div id="ring" data-cursor=""
+             style="position:absolute;top:0;left:0;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid var(--color-text);display:none;opacity:0;transition:opacity .3s ease;will-change:transform;mix-blend-mode:difference"></div>
+        <div id="dot" data-cursor=""
+             style="position:absolute;top:0;left:0;width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--color-accent);display:none;opacity:0;transition:opacity .3s ease;will-change:transform"></div>
+    </div>
 
-    <!-- ====== SETTINGS PANEL ====== -->
-    <div class="settings-overlay" id="settings-overlay"></div>
-
-    <!-- Password Gate -->
-    <div id="login-modal" class="login-modal">
-        <div class="login-card">
-            <div class="login-icon"><i class="fa-solid fa-lock"></i></div>
-            <h3>Admin Access</h3>
-            <p>Enter password to edit settings.</p>
-            <div class="login-input-wrap">
-                <input type="password" id="login-password" placeholder="Password" autocomplete="off">
-            </div>
-            <div id="login-error" class="login-error"></div>
-            <button id="login-submit" class="login-btn">Unlock</button>
+    <!-- ── Intro ─────────────────────────────────────────────────────── -->
+    <div id="intro"
+         style="position:fixed;inset:0;z-index:90;background:var(--color-bg);display:flex;flex-direction:column;justify-content:center;padding:32px;animation:fadein .3s ease">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;position:absolute;top:0;left:0;right:0;padding:24px 32px;border-bottom:2px solid var(--color-divider)">
+            <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)"><span data-bind="handle">xyz.taimo</span> — recent work</span>
+            <button type="button" class="btn js-skip" data-magnet=""
+                    style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:2px 0;color:var(--ink-2)">Skip</button>
+        </div>
+        <div id="intro-row" data-introrow=""
+             style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:760px;width:100%;margin:0 auto"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 32px;border-top:2px solid var(--color-divider);display:flex;justify-content:space-between;align-items:center;gap:16px">
+            <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)">Enter, or press Esc</span>
+            <button type="button" data-magnet="" class="btn btn-primary js-skip"
+                    style="letter-spacing:.14em;text-transform:uppercase;font-size:12px;padding:12px 22px">Enter site</button>
         </div>
     </div>
 
-    <!-- Social Preview Modal -->
-    <div id="social-preview-modal" class="login-modal">
-        <div class="login-card preview-card">
-            <button class="preview-close" id="preview-close"><i class="fa-solid fa-xmark"></i></button>
-            <div class="preview-platform-icon" id="preview-platform-icon"><i class="fa-brands fa-tiktok"></i></div>
-            
-            <div class="preview-avatar">
-                <img src="" alt="" id="preview-avatar-img">
-            </div>
-            <h3 id="preview-handle">@username</h3>
-            <p id="preview-tagline" class="preview-tagline">Tagline</p>
-            
-            <div class="preview-stats stats-row">
-                <div class="stat">
-                    <span class="stat-number" id="preview-stat1-num">-</span>
-                    <span class="stat-label" id="preview-stat1-label">-</span>
+    <!-- ── Shell ─────────────────────────────────────────────────────── -->
+    <div data-shell="" style="display:grid;grid-template-columns:minmax(300px,368px) 1fr;max-width:1560px;margin:0 auto;position:relative;z-index:2">
+
+        <aside data-rail="" data-pad="" data-scroll=""
+               style="position:sticky;top:0;height:100vh;overflow-y:auto;border-right:2px solid var(--color-divider);padding:38px 34px;display:flex;flex-direction:column;gap:26px">
+
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                <div data-tilt="" style="width:96px;height:96px;overflow:hidden;background:var(--color-surface);border:1px solid var(--hair)">
+                    <img id="avatar" src="avatar.webp" alt="xyz.taimo" class="grayscale" style="width:100%;height:100%;object-fit:cover">
                 </div>
-                <div class="stat-divider"></div>
-                <div class="stat">
-                    <span class="stat-number" id="preview-stat2-num">-</span>
-                    <span class="stat-label" id="preview-stat2-label">-</span>
+                <div style="display:flex;gap:2px">
+                    <button type="button" id="theme-btn" title="Theme" aria-label="Toggle theme" class="btn btn-secondary btn-icon" data-magnet="" style="border-color:var(--color-divider)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path id="theme-icon" d=""></path></svg>
+                    </button>
+                    <button type="button" id="fx-btn" title="Effects" aria-label="Toggle effects" class="btn btn-secondary btn-icon" data-magnet="" style="border-color:var(--color-divider)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l1.5 4.5L19 9l-4.5 1.5L13 15l-1.5-4.5L7 9l4.5-1.5z"></path></svg>
+                    </button>
                 </div>
             </div>
-            
-            <a href="#" target="_blank" id="preview-link-btn" class="login-btn preview-btn">Open in App</a>
-        </div>
-    </div>
 
-    <div class="settings-panel" id="settings-panel">
-        <div class="settings-header">
-            <h2>Settings</h2>
-            <button id="settings-close" class="settings-close-btn"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="settings-body">
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                    <span style="width:6px;height:6px;background:var(--color-accent);animation:pulseDot 2.4s ease-in-out infinite"></span>
+                    <span data-bind="availability" style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2)"></span>
+                </div>
+                <h1 id="handle" style="font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1;margin:0 0 8px">xyz.taimo</h1>
+                <p data-bind="tagline" style="margin:0;font-size:14px;line-height:1.5;color:var(--ink-2);max-width:30ch"></p>
+            </div>
 
-            <!-- Profile Section -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Profile</h3>
-                <div class="setting-item">
-                    <label>Avatar Image URL</label>
-                    <input type="text" id="s-avatar" placeholder="avatar.jpg or https://...">
+            <div data-statrow="" style="display:flex;gap:28px;padding:16px 0;border-top:2px solid var(--color-divider);border-bottom:2px solid var(--color-divider)">
+                <div>
+                    <div data-bind="stat1Num" style="font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1"></div>
+                    <div data-bind="stat1Label" style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-top:4px"></div>
                 </div>
-                <div class="setting-item">
-                    <label>Handle / Name</label>
-                    <input type="text" id="s-handle" placeholder="xyz.taimo">
+                <div>
+                    <div data-bind="stat2Num" style="font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1"></div>
+                    <div data-bind="stat2Label" style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-top:4px"></div>
                 </div>
-                <div class="setting-item">
-                    <label>Tagline</label>
-                    <input type="text" id="s-tagline" placeholder="TikTok Sound Promotions">
-                </div>
-                <div class="setting-item-row">
-                    <div class="setting-item">
-                        <label>Stat 1 Number</label>
-                        <input type="text" id="s-stat1-num" placeholder="815K">
+            </div>
+
+            <div id="socials" style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px"></div>
+
+            <div data-box="" style="border:1px solid var(--color-divider);padding:14px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px">
+                    <button type="button" id="play-btn" aria-label="Play or pause" class="btn btn-primary btn-icon" data-magnet="" data-playbtn="" style="width:38px;height:38px;flex:none">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path id="play-icon" d="M8 5l12 7-12 7z"></path></svg>
+                    </button>
+                    <div style="min-width:0;flex:1">
+                        <div data-bind="musicTitle" style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+                        <div data-bind="musicArtist" style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)"></div>
                     </div>
-                    <div class="setting-item">
-                        <label>Stat 1 Label</label>
-                        <input type="text" id="s-stat1-label" placeholder="Followers">
-                    </div>
+                    <span id="time" style="font-size:10px;color:var(--ink-2);font-variant-numeric:tabular-nums">0:00</span>
                 </div>
-                <div class="setting-item-row">
-                    <div class="setting-item">
-                        <label>Stat 2 Number</label>
-                        <input type="text" id="s-stat2-num" placeholder="50.9M">
-                    </div>
-                    <div class="setting-item">
-                        <label>Stat 2 Label</label>
-                        <input type="text" id="s-stat2-label" placeholder="Likes">
-                    </div>
+                <div id="track" data-track="" style="height:3px;background:var(--color-divider);cursor:pointer">
+                    <div id="fill" style="height:100%;width:0%;background:var(--color-accent)"></div>
                 </div>
+                <input type="range" id="volume" min="0" max="1" step="0.02" aria-label="Volume" style="width:100%;accent-color:var(--color-accent)">
+                <p id="music-msg" style="margin:0;font-size:11px;line-height:1.4;color:var(--color-accent);display:none"></p>
             </div>
 
-            <!-- Social Links -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Social Icons</h3>
-                <div class="setting-item">
-                    <label>TikTok URL</label>
-                    <input type="text" id="s-social-tiktok" placeholder="https://tiktok.com/@xyz.taimo">
-                </div>
-                <div class="setting-item">
-                    <label>Instagram URL</label>
-                    <input type="text" id="s-social-instagram" placeholder="https://instagram.com/...">
-                </div>
-                <div class="setting-item">
-                    <label>YouTube URL</label>
-                    <input type="text" id="s-social-youtube" placeholder="https://youtube.com/...">
-                </div>
-                <div class="setting-item">
-                    <label>Facebook URL</label>
-                    <input type="text" id="s-social-facebook" placeholder="https://facebook.com/...">
-                </div>
-            </div>
-
-            <!-- Intro Setup -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Intro Setup</h3>
-                <div class="setting-item">
-                    <label>Video 1 (MP4 URL)</label>
-                    <input type="text" id="s-intro-vid1" placeholder="https://...">
-                    <input type="text" id="s-intro-vid1-title" placeholder="Title (e.g. Sound Promo)" style="margin-top:0.3rem">
-                    <input type="text" id="s-intro-vid1-views" placeholder="Views (e.g. +2.5M Views)" style="margin-top:0.3rem">
-                    <input type="text" id="s-intro-vid1-link" placeholder="TikTok Link" style="margin-top:0.3rem">
-                </div>
-                <div class="setting-item" style="margin-top: 1.5rem">
-                    <label>Video 2 (MP4 URL)</label>
-                    <input type="text" id="s-intro-vid2" placeholder="https://...">
-                    <input type="text" id="s-intro-vid2-title" placeholder="Title (e.g. Sound Promo)" style="margin-top:0.3rem">
-                    <input type="text" id="s-intro-vid2-views" placeholder="Views (e.g. +5.1M Views)" style="margin-top:0.3rem">
-                    <input type="text" id="s-intro-vid2-link" placeholder="TikTok Link" style="margin-top:0.3rem">
-                </div>
-                <div class="setting-item" style="margin-top: 1.5rem">
-                    <label>Video 3 (MP4 URL)</label>
-                    <input type="text" id="s-intro-vid3" placeholder="https://...">
-                    <input type="text" id="s-intro-vid3-title" placeholder="Title (e.g. Sound Promo)" style="margin-top:0.3rem">
-                    <input type="text" id="s-intro-vid3-views" placeholder="Views (e.g. +1.2M Views)" style="margin-top:0.3rem">
-                    <input type="text" id="s-intro-vid3-link" placeholder="TikTok Link" style="margin-top:0.3rem">
-                </div>
-            </div>
-
-            <!-- Link Cards -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Link Cards</h3>
-                <div id="link-cards-editor"></div>
-                <button id="add-link-btn" class="settings-add-btn"><i class="fa-solid fa-plus"></i> Add Link</button>
-            </div>
-
-            <!-- Appearance -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Appearance</h3>
-                <div class="setting-item">
-                    <label>Background Image URL <span class="setting-hint">(leave empty for solid color)</span></label>
-                    <input type="text" id="s-bg-image" placeholder="https://... or filename.jpg">
-                </div>
-                <div class="setting-item">
-                    <label>Music URL <span class="setting-hint">(MP3 link)</span></label>
-                    <input type="text" id="s-music-url" placeholder="https://...mp3">
-                </div>
-                <div class="setting-item">
-                    <label>Song Title</label>
-                    <input type="text" id="s-music-title" placeholder="Song Title">
-                </div>
-            </div>
-
-            <!-- Form Settings -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Contact Form</h3>
-                <div class="setting-item">
-                    <label>Formspree Endpoint</label>
-                    <input type="text" id="s-formspree" placeholder="https://formspree.io/f/your_id">
-                </div>
-                <div class="setting-item">
-                    <label>Form Title</label>
-                    <input type="text" id="s-form-title" placeholder="Business Inquiry">
-                </div>
-                <div class="setting-item">
-                    <label>Form Subtitle</label>
-                    <input type="text" id="s-form-desc" placeholder="Sound promotion & collaboration requests.">
-                </div>
-            </div>
-
-            <!-- Security -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Security</h3>
-                <div class="setting-item">
-                    <label>New Password <span class="setting-hint">(leave empty to keep current)</span></label>
-                    <input type="password" id="s-new-password" placeholder="Enter new password">
-                </div>
-                <div class="setting-item">
-                    <label>Confirm Password</label>
-                    <input type="password" id="s-confirm-password" placeholder="Confirm new password">
-                </div>
-                <div id="pw-change-status" style="font-size: 0.8rem; min-height: 1rem; margin-top: -0.3rem;"></div>
-            </div>
-
-            <!-- Global Backend Setup -->
-            <div class="settings-section">
-                <h3 class="settings-section-title">Global Settings</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">For security reasons on GitHub Pages, live-saving via PAT is disabled. Click "Export & Save" to download your updated <code>data.json</code>, then upload it to your GitHub repository.</p>
-            </div>
-            
-        </div>
-        <div class="settings-footer">
-            <button id="settings-save" class="settings-save-btn">Export & Save (data.json)</button>
-            <button id="settings-test-intro" class="settings-save-btn" style="background: rgba(255,255,255,0.1); color: var(--text-primary); border: 1px solid var(--card-border);">Test Intro</button>
-            <button id="settings-reset" class="settings-reset-btn">Reset to Default</button>
-        </div>
-    </div>
-
-    <!-- ====== INTRO OVERLAY ====== -->
-    <div id="intro-overlay" class="intro-overlay" role="dialog" aria-modal="true" aria-label="Intro videos">
-        <div class="intro-cards-container" id="intro-deck">
-            <!-- Card 1 -->
-            <a href="#" target="_blank" rel="noopener noreferrer" class="intro-vid-card" id="intro-card-1">
-                <video loop muted playsinline preload="none" id="intro-video-1" poster="intro1-poster.webp"></video>
-                <div class="intro-vid-info">
-                    <h4 id="intro-vid1-title">Sound Promo</h4>
-                    <p id="intro-vid1-views">Loading...</p>
-                </div>
-            </a>
-            <!-- Card 2 -->
-            <a href="#" target="_blank" rel="noopener noreferrer" class="intro-vid-card" id="intro-card-2">
-                <video loop muted playsinline preload="none" id="intro-video-2" poster="intro2-poster.webp"></video>
-                <div class="intro-vid-info">
-                    <h4 id="intro-vid2-title">Sound Promo</h4>
-                    <p id="intro-vid2-views">Loading...</p>
-                </div>
-            </a>
-            <!-- Card 3 -->
-            <a href="#" target="_blank" rel="noopener noreferrer" class="intro-vid-card" id="intro-card-3">
-                <video loop muted playsinline preload="none" id="intro-video-3" poster="intro3-poster.webp"></video>
-                <div class="intro-vid-info">
-                    <h4 id="intro-vid3-title">Sound Promo</h4>
-                    <p id="intro-vid3-views">Loading...</p>
-                </div>
-            </a>
-        </div>
-
-        <!-- Swipe progress (mobile) -->
-        <div class="intro-progress" id="intro-progress">
-            <button type="button" class="intro-dot is-active" data-index="0" aria-label="Video 1"></button>
-            <button type="button" class="intro-dot" data-index="1" aria-label="Video 2"></button>
-            <button type="button" class="intro-dot" data-index="2" aria-label="Video 3"></button>
-        </div>
-
-        <!-- Swipe hint (mobile) -->
-        <div class="intro-hint" id="intro-hint" aria-hidden="true">
-            <i class="fa-solid fa-chevron-up"></i>
-            <span>Swipe up for more &middot; swipe down to skip</span>
-        </div>
-
-        <button id="intro-enter-btn" type="button" class="intro-enter-btn">Enter Site <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
-    </div>
-
-    <!-- ====== MAIN PAGE ====== -->
-    <div class="layout-wrapper">
-        <aside class="profile-sidebar spring-in">
-            <div class="avatar-container interactive-hover">
-                <img src="avatar.webp" alt="xyz.taimo" class="avatar" id="page-avatar">
-            </div>
-            <h1 class="handle" id="page-handle">xyz.taimo</h1>
-            <p class="tagline" id="page-tagline">TikTok Sound Promotions</p>
-            
-            <div class="stats-row">
-                <div class="stat">
-                    <span class="stat-number" id="page-stat1-num">815K</span>
-                    <span class="stat-label" id="page-stat1-label">Followers</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat">
-                    <span class="stat-number" id="page-stat2-num">50.9M</span>
-                    <span class="stat-label" id="page-stat2-label">Likes</span>
-                </div>
-            </div>
-
-            <div class="social-icons">
-                <a href="https://tiktok.com/@xyz.taimo" target="_blank" id="social-tiktok" rel="noopener noreferrer" class="social-icon tiktok interactive-hover"><i class="fa-brands fa-tiktok"></i></a>
-                <a href="#" target="_blank" id="social-instagram" rel="noopener noreferrer" class="social-icon instagram interactive-hover"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" target="_blank" id="social-youtube" rel="noopener noreferrer" class="social-icon youtube interactive-hover"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" target="_blank" id="social-facebook" rel="noopener noreferrer" class="social-icon facebook interactive-hover"><i class="fa-brands fa-facebook-f"></i></a>
+            <div style="margin-top:auto;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);display:flex;justify-content:space-between;gap:10px">
+                <span data-bind="footerLeft"></span>
+                <button type="button" id="edit-btn" class="btn" style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:0;color:var(--ink-2)">Edit</button>
             </div>
         </aside>
 
-        <main class="content-main spring-in delay-1">
-            <section class="links-section" id="page-links"></section>
+        <main data-pad="" style="padding:0 0 80px;min-width:0;display:flex;flex-direction:column">
+            <div style="overflow:hidden;border-bottom:2px solid var(--color-divider);padding:12px 0">
+                <div id="marquee" data-marq=""
+                     style="display:flex;gap:44px;width:max-content;animation:marq 34s linear infinite;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);will-change:transform"></div>
+            </div>
 
-            <section class="form-section spring-in delay-2">
-                <h2 class="section-title" id="page-form-title">Business Inquiry</h2>
-                <p class="section-desc" id="page-form-desc">Sound promotion & collaboration requests.</p>
-                
-                <form id="promo-form" action="https://formspree.io/f/your_formspree_id" method="POST">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <input type="text" id="name" name="name" required placeholder=" ">
-                            <label for="name">Name / Agency</label>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" required placeholder=" ">
-                            <label for="email">Email</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" id="artist" name="artist" required placeholder=" ">
-                        <label for="artist">Artist / Brand</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="url" id="link" name="link" required placeholder=" ">
-                        <label for="link">Track Link</label>
-                    </div>
-                    <div class="form-group">
-                        <select id="budget" name="budget" required>
-                            <option value="" disabled selected></option>
-                            <option value="<500">&lt; $500</option>
-                            <option value="500-1000">$500 – $1,000</option>
-                            <option value="1000-5000">$1,000 – $5,000</option>
-                            <option value="5000+">$5,000+</option>
-                        </select>
-                        <label for="budget">Budget</label>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="message" name="message" rows="4" required placeholder=" "></textarea>
-                        <label for="message">Campaign Details</label>
-                    </div>
-                    <button type="submit" class="submit-btn interactive-hover" id="submit-btn">
-                        <span>Submit Inquiry</span>
+            <section data-pad="" style="padding:64px 54px 54px;border-bottom:2px solid var(--color-divider);order:1">
+                <span data-rv="" data-bind="heroKicker" style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--color-accent)"></span>
+                <h2 data-rv="" data-hero-h1="" data-bind="heroTitle" style="font-size:clamp(38px,4.6vw,66px);font-weight:800;letter-spacing:-.035em;line-height:.98;margin:14px 0 0;max-width:16ch;text-wrap:balance"></h2>
+                <p data-rv="" data-bind="heroBody" style="margin:20px 0 0;font-size:16px;line-height:1.55;color:var(--ink-2);max-width:52ch;text-wrap:pretty"></p>
+                <div data-rv="" style="display:flex;flex-wrap:wrap;gap:2px;margin-top:32px">
+                    <button type="button" data-magnet="" class="btn btn-primary js-inquiry" style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:16px 26px;gap:12px">
+                        <span data-bind="ctaPrimary"></span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"></path></svg>
                     </button>
-                    <div id="form-status" class="form-status"></div>
-                </form>
+                    <button type="button" data-magnet="" data-bind="ctaSecondary" class="btn btn-secondary js-work" style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:16px 26px;border-color:var(--color-divider)"></button>
+                </div>
             </section>
-            
-            <footer class="footer">
-                <p>&copy; 2026 xyz.taimo. All rights reserved.</p>
-            </footer>
+
+            <section id="sec-links" data-pad="" style="padding:54px 54px;border-bottom:2px solid var(--color-divider);order:2">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:26px">
+                    <h3 style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);margin:0">Links</h3>
+                    <span id="link-count" style="font-size:11px;letter-spacing:.14em;color:var(--ink-2)"></span>
+                </div>
+                <div id="links-grid" data-grid2="" style="display:grid;grid-template-columns:repeat(2,1fr);gap:2px"></div>
+            </section>
+
+            <section id="sec-work" data-pad="" style="padding:54px 54px;border-bottom:2px solid var(--color-divider);order:3">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:26px">
+                    <h3 style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);margin:0">Selected results</h3>
+                    <button type="button" class="btn btn-ghost js-work" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase">All work</button>
+                </div>
+                <div id="vidstrip" data-vidstrip="" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px"></div>
+            </section>
+
+            <section id="sec-cta" data-pad="" style="padding:54px 54px;order:4">
+                <div data-box="" style="border:2px solid var(--color-divider);padding:40px 36px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:28px">
+                    <div>
+                        <h3 data-bind="closeTitle" style="font-size:clamp(26px,3vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1;margin:0;max-width:20ch"></h3>
+                        <p data-bind="closeBody" style="margin:14px 0 0;font-size:14px;color:var(--ink-2);max-width:44ch"></p>
+                    </div>
+                    <button type="button" data-magnet="" class="btn btn-primary js-inquiry" style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:16px 26px;gap:12px">
+                        <span data-bind="ctaPrimary"></span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;margin-top:28px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)">
+                    <span data-bind="footerLeft"></span>
+                    <span data-bind="footerRight"></span>
+                </div>
+            </section>
         </main>
     </div>
 
-    <script src="script.js"></script>
-    <script src="cursor.js" defer></script>
+    <!-- Overlays (inquiry / work / login / admin) are built here by script.js -->
+    <div id="modal-root"></div>
+</div>
+
+<noscript>
+    <div style="padding:32px;max-width:640px;margin:0 auto">
+        <h1>xyz.taimo</h1>
+        <p>TikTok sound promotion and international collaborations.</p>
+        <ul>
+            <li><a href="https://tiktok.com/@xyz.taimo">TikTok</a></li>
+            <li><a href="https://www.instagram.com/xyz.taimo">Instagram</a></li>
+            <li><a href="https://www.youtube.com/@xyz_taimo">YouTube</a></li>
+            <li><a href="https://www.facebook.com/profile.php?id=61590058673601">Facebook</a></li>
+        </ul>
+    </div>
+</noscript>
+
+<script src="script.js"></script>
 </body>
 </html>
